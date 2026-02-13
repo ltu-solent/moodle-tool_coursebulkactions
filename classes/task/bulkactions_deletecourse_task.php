@@ -40,9 +40,22 @@ class bulkactions_deletecourse_task extends adhoc_task {
     public function execute() {
         global $DB;
         $id = $this->get_custom_data()->id;
-        $record = $DB->get_record('tool_coursebulkactions_queue', ['id' => $id, 'action' => manager::BULKACTION_DELETE]);
+        $shortname = $this->get_custom_data()->shortname;
+        $record = $DB->get_record('tool_coursebulkactions_queue', [
+            'id' => $id,
+        ]);
         if (!$record) {
-            mtrace("No record found for this item: $id");
+            mtrace("No record found for this item: $id ($shortname)");
+            manager::dequeue($id);
+            return;
+        }
+        if ($record->status != manager::STATUS_QUEUED) {
+            mtrace("Record with id $id ($shortname) is not queued, skipping.");
+            return;
+        }
+        if ($record->action != manager::BULKACTION_DELETE) {
+            mtrace("Record with id $id ($shortname) is not a delete action, skipping.");
+            manager::dequeue($id);
             return;
         }
         $record->status = manager::STATUS_PROCESSING;
@@ -50,8 +63,8 @@ class bulkactions_deletecourse_task extends adhoc_task {
         $DB->update_record('tool_coursebulkactions_queue', $record);
         $course = $DB->get_record('course', ['id' => $record->courseid]);
         if (!$course) {
-            mtrace("Course {$record->courseid} not found for this item: $id");
-            $DB->delete_records('tool_coursebulkactions_queue', ['id' => $record->id]);
+            mtrace("Course {$record->courseid} not found for this item: $id ($shortname)");
+            manager::dequeue($id);
             return;
         }
         mtrace("Beginning deletion of {$course->shortname}");
