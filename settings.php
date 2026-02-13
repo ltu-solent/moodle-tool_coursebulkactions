@@ -1,0 +1,65 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * TODO describe file settings
+ *
+ * @package    tool_coursebulkactions
+ * @copyright  2026 Southampton Solent University {@link https://www.solent.ac.uk}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+use core\lang_string;
+use core\url;
+
+defined('MOODLE_INTERNAL') || die();
+
+
+if ($hassiteconfig) {
+    $parent = new admin_category('tool_coursebulkactionscat', new lang_string('pluginname', 'tool_coursebulkactions'));
+    $ADMIN->add('tools', $parent);
+    $externalpage = new admin_externalpage(
+        'tool_coursebulkactions/index',
+        new lang_string('managecoursebulkactions', 'tool_coursebulkactions'),
+        new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'search'])
+    );
+
+    $ADMIN->add('tool_coursebulkactionscat', $externalpage);
+    $settings = new admin_settingpage(
+        'tool_coursebulkactions_general',
+        new lang_string('generalsettings', 'tool_coursebulkactions')
+    );
+
+    $settings->add(
+        new admin_setting_configselect(
+            'tool_coursebulkactions/limitqueueditemsrun',
+            new lang_string('limitqueueditemsrun', 'tool_coursebulkactions'),
+            new lang_string('limitqueueditemsrun_desc', 'tool_coursebulkactions'),
+            5,
+            array_combine(range(1, 30), range(1, 30))
+        )
+    );
+    // Grace period.
+    $settings->add(
+        new admin_setting_configduration(
+            'tool_coursebulkactions/graceperiod',
+            new lang_string('graceperiod', 'tool_coursebulkactions'),
+            new lang_string('graceperiod_desc', 'tool_coursebulkactions'),
+            604800 // Default to 7 days.
+        )
+    );
+    $ADMIN->add('tool_coursebulkactionscat', $settings);
+}
