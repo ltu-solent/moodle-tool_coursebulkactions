@@ -4,14 +4,14 @@ This plugin allows you to do bulk actions on courses based on your own searches.
 
 You can save the searches for later use (give your search a title to save it), or just use the search as-is.
 
-When you see your search results you can select the ones you want to do an operations on.
+When you see your search results you can select the ones you want to do an operation on.
 
 Show/Hide will work instantly on your choices.
 
 Deleting courses works a little differently. Because deleting courses can take a little while, the courses you select for deletion
 are "queued" for a "grace period". This grace period helps to prevent accidental deletion. By default this is 7 days.
 
-Whilst a course is waiting for the grace period to end, you can "dequeue" it if you realise that you don't want it saved.
+Whilst a course is waiting for the grace period to end, you can "Dequeue" it if you realise that you don't want it saved.
 
 For auditing purposes a log is retained of the deletions that have occurred.
 
