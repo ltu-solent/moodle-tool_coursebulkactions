@@ -36,6 +36,8 @@ class queued_table extends sql_table {
      * Queue table constructor
      *
      * @param string $uniqueid
+     * @param int $status
+     * @param string $tab
      */
     public function __construct($uniqueid, $status = [manager::STATUS_QUEUED], $tab = 'queue') {
         global $DB;
@@ -75,7 +77,8 @@ class queued_table extends sql_table {
 
     /**
      * Action column
-     * @param stdClass row
+     *
+     * @param stdClass $row
      * @return string
      */
     public function col_action($row): string {

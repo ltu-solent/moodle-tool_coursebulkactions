@@ -41,6 +41,7 @@ class searchresults_table extends sql_table {
      *
      * @param string $uniqueid
      * @param stdClass $search
+     * @param string $downloadformat
      * @return void
      */
     public function __construct($uniqueid, $search, $downloadformat = '') {
