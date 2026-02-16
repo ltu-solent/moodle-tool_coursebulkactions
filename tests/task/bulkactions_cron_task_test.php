@@ -109,4 +109,107 @@ final class bulkactions_cron_task_test extends advanced_testcase {
             ],
         ];
     }
+
+    /**
+     * Test limiting pending tasks
+     *
+     * @return void
+     * @covers \tool_coursebulkactions\task\bulkactions_cron_task
+     */
+    public function test_limit_tasks(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $limit = 10;
+        set_config('limitqueueditemsrun', $limit, 'tool_coursebulkactions');
+        $managerrole = $DB->get_record('role', ['shortname' => 'manager']);
+        $manager = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->role_assign($managerrole->id, $manager->id);
+        $courses = [];
+        for ($x = 0; $x < ($limit + 10); $x++) {
+            $course = $this->getDataGenerator()->create_course();
+            $courses[$course->id] = $course;
+            $record = (object)[
+                'courseid' => $course->id,
+                'action' => manager::BULKACTION_DELETE,
+                'status' => manager::STATUS_QUEUED,
+                'shortname' => $course->shortname,
+                'fullname' => $course->fullname,
+                'usermodified' => $manager->id,
+                'timecreated' => time() - (DAYSECS * 8),
+                'timemodified' => time() - (DAYSECS * 8),
+            ];
+            $DB->insert_record('tool_coursebulkactions_queue', $record);
+        }
+
+        // Run the scheduled task for the first time, this will add 10 adhoc tasks.
+        $scheduledtask = \core\task\manager::get_scheduled_task(bulkactions_cron_task::class);
+        ob_start();
+        $scheduledtask->execute();
+        ob_end_clean();
+        $pendingtasks = \core\task\manager::get_adhoc_tasks(bulkactions_deletecourse_task::class);
+        $this->assertCount(10, $pendingtasks);
+
+        // Run the scheduled task again, but because the adhoc tasks haven't run, no more are added.
+        ob_start();
+        $scheduledtask->execute();
+        ob_end_clean();
+        $pendingtasks = \core\task\manager::get_adhoc_tasks(bulkactions_deletecourse_task::class);
+        $this->assertCount(10, $pendingtasks);
+
+        $clock = \core\di::get(\core\clock::class);
+        for ($x = 0; $x < 5; $x++) {
+            $task = \core\task\manager::get_next_adhoc_task($clock->time());
+            ob_start();
+            $task->execute();
+            ob_end_clean();
+            \core\task\manager::adhoc_task_complete($task);
+        }
+        // There should only be five left.
+        $pendingtasks = \core\task\manager::get_adhoc_tasks(bulkactions_deletecourse_task::class);
+        $this->assertCount(5, $pendingtasks);
+
+        ob_start();
+        $scheduledtask->execute();
+        ob_end_clean();
+
+        // Now there should be 10 delete tasks again. With five left queued.
+        $pendingtasks = \core\task\manager::get_adhoc_tasks(bulkactions_deletecourse_task::class);
+        $this->assertCount(10, $pendingtasks);
+        $queuedtasks = $DB->get_records(
+            'tool_coursebulkactions_queue',
+            ['action' => manager::BULKACTION_DELETE, 'status' => manager::STATUS_QUEUED]
+        );
+        $this->assertCount(5, $queuedtasks);
+
+        // Run all pending tasks.
+        for ($x = 0; $x < count($pendingtasks); $x++) {
+            $task = \core\task\manager::get_next_adhoc_task($clock->time());
+            ob_start();
+            $task->execute();
+            ob_end_clean();
+            \core\task\manager::adhoc_task_complete($task);
+        }
+
+        // Get remaining Queued tasks.
+        ob_start();
+        $scheduledtask->execute();
+        ob_end_clean();
+        $pendingtasks = \core\task\manager::get_adhoc_tasks(bulkactions_deletecourse_task::class);
+        $this->assertCount(5, $pendingtasks);
+        $queuedtasks = $DB->get_records(
+            'tool_coursebulkactions_queue',
+            ['action' => manager::BULKACTION_DELETE, 'status' => manager::STATUS_QUEUED]
+        );
+        $this->assertCount(0, $queuedtasks);
+        // Run all pending tasks.
+        for ($x = 0; $x < count($pendingtasks); $x++) {
+            $task = \core\task\manager::get_next_adhoc_task($clock->time());
+            ob_start();
+            $task->execute();
+            ob_end_clean();
+            \core\task\manager::adhoc_task_complete($task);
+        }
+        $pendingtasks = \core\task\manager::get_adhoc_tasks(bulkactions_deletecourse_task::class);
+        $this->assertCount(0, $pendingtasks);
+    }
 }

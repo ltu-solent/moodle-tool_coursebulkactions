@@ -50,9 +50,21 @@ class bulkactions_cron_task extends scheduled_task {
             'graceperiod' => time() - $graceperiod,
             'status' => bulkactionsmanager::STATUS_QUEUED,
         ];
-        // Check how many adhoc tasks might already be waiting.
+        // Deleting a course could take a long time, so this prevents unhindered numbers of deletion tasks blocking other things.
+        // Check how many adhoc tasks might already be waiting or running.
+        $queuedtasks = \core\task\manager::get_adhoc_tasks(bulkactions_deletecourse_task::class);
+        $countqueuedtasks = count($queuedtasks);
+        // Already at capacity, so bale out.
+        if ($countqueuedtasks >= $limit) {
+            mtrace("Reached limit of $limit delete tasks.");
+            return;
+        }
         // Reduce the limit to prevent a build up.
-        // Deleting a course could take a long time, so don't hog things.
+        $newlimit = $limit - $countqueuedtasks;
+        if ($countqueuedtasks > 0 && $newlimit >= 1) {
+            $limit = $newlimit;
+            mtrace("Adjusting limit to $limit delete tasks as $countqueuedtasks are already pending or running");
+        }
         // Joining to the course table, ensures the course still exists.
         $select = "SELECT cba.* ";
         $from = " FROM {tool_coursebulkactions_queue} cba
