@@ -28,15 +28,22 @@ use tool_coursebulkactions\manager;
 use tool_coursebulkactions\tabs;
 
 require('../../../config.php');
+require_once($CFG->libdir . '/adminlib.php');
 
-require_login();
 $tab = optional_param('tab', 'search', PARAM_ALPHA);
 $action = optional_param('action', '', PARAM_ALPHA);
 $id = optional_param('id', 0, PARAM_INT);
 
-$url = new url('/admin/tool/coursebulkactions/index.php', []);
-$PAGE->set_url($url);
-$PAGE->set_context(system::instance());
+$pageparams = [
+    'tab' => $tab,
+    'action' => $action,
+    'id' => $id,
+];
+admin_externalpage_setup('tool_coursebulkactions/index', '', $pageparams, '/admin/tool/coursebulkactions/index.php');
+$context = system::instance();
+require_capability('moodle/course:delete', $context);
+
+$PAGE->set_context($context);
 
 $PAGE->set_heading($SITE->fullname);
 if ($tab == 'search') {
