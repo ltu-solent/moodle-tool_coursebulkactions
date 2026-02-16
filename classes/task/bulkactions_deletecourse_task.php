@@ -49,13 +49,13 @@ class bulkactions_deletecourse_task extends adhoc_task {
             manager::dequeue($id);
             return;
         }
-        if ($record->status != manager::STATUS_QUEUED) {
-            mtrace("Record with id $id ($shortname) is not queued, skipping.");
-            return;
-        }
         if ($record->action != manager::BULKACTION_DELETE) {
             mtrace("Record with id $id ($shortname) is not a delete action, skipping.");
-            manager::dequeue($id);
+            return;
+        }
+        // When the adhoc task is created the record is set to Pending.
+        if ($record->status != manager::STATUS_PENDING) {
+            mtrace("Record with id $id ($shortname) is not pending, skipping.");
             return;
         }
         $record->status = manager::STATUS_PROCESSING;
