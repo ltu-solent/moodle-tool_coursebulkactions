@@ -36,6 +36,7 @@
       </KEYS>
       <INDEXES>
         <INDEX NAME="courseidaction" UNIQUE="true" FIELDS="courseid,action" />
+        <INDEX NAME="actionstatus" UNIQUE="false" FIELDS="action,status"/>
       </INDEXES>
     </TABLE>
   </TABLES>

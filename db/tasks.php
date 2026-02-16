@@ -36,5 +36,13 @@ $tasks = [
         'day' => '*',
         'month' => '*',
         'dayofweek' => '*',
+    ], [
+        'classname' => tool_coursebulkactions\task\bulkactions_cleanup_task::class,
+        'blocking' => 0,
+        'minute' => '14',
+        'hour' => '2',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => 6,
     ],
 ];

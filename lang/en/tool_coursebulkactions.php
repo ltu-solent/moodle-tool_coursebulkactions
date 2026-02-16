@@ -32,6 +32,7 @@ $string['bulkactions'] = 'Bulk actions';
 $string['bulkactionscrontask'] = 'Course bulk actions cron task';
 
 $string['categoryidnumber'] = 'Category ID number';
+$string['cleanuptask'] = 'Clean up task (tool_coursebulkactions)';
 $string['confirmdelete'] = 'Confirm delete';
 $string['coursedeletionfailed'] = 'Course deletion failed';
 $string['coursefullname'] = 'Fullname';
@@ -63,6 +64,8 @@ $string['limitqueueditemsrun'] = 'Limit of queued items to run at once';
 $string['limitqueueditemsrun_desc'] = 'The maximum number of queued items to process at once.
     Setting this to a low number can help reduce the load on the server, but will also increase the time it takes for
     all queued items to be processed.';
+$string['logretention'] = 'Log retention';
+$string['logretention_desc'] = 'Logs retained longer than this period are removed. This will just be Failed, or Completed tasks';
 $string['logs'] = 'Logs';
 
 $string['managecoursebulkactions'] = 'Manage course bulk actions';

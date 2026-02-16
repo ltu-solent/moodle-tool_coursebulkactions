@@ -61,5 +61,14 @@ if ($hassiteconfig) {
             604800 // Default to 7 days.
         )
     );
+
+    $settings->add(
+        new admin_setting_configduration(
+            'tool_coursebulkactions/logretention',
+            new lang_string('logretention', 'tool_coursebulkactions'),
+            new lang_string('logretention_desc', 'tool_coursebulkactions'),
+            15552000 // Default to 6 months.
+        )
+    );
     $ADMIN->add('tool_coursebulkactionscat', $settings);
 }
