@@ -23,8 +23,10 @@
  */
 
 use core\context\system;
+use core\output\notification;
 use core\url;
 use tool_coursebulkactions\manager;
+use tool_coursebulkactions\scale;
 use tool_coursebulkactions\tabs;
 
 require('../../../config.php');
@@ -54,6 +56,10 @@ if ($tab == 'queue') {
         manager::dequeue($id);
         redirect(new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'queue']));
     }
+    if ($action === 'requeue' && $id && confirm_sesskey()) {
+        manager::requeue($id);
+        redirect(new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'queue']));
+    }
 }
 if ($tab == 'saved') {
     if ($action === 'delete' && $id && confirm_sesskey()) {
@@ -64,6 +70,28 @@ if ($tab == 'saved') {
 echo $OUTPUT->header();
 
 echo $OUTPUT->heading(get_string('managecoursebulkactions', 'tool_coursebulkactions'));
+
+if (manager::has_space_warning()) {
+    echo $OUTPUT->notification(
+        get_string('categorybinenabled', 'tool_coursebulkactions'),
+        notification::NOTIFY_WARNING
+    );
+    if (function_exists('disk_free_space')) {
+        $space = manager::available_space();
+        echo $OUTPUT->notification(
+            get_string('categorybinwarning', 'tool_coursebulkactions', [
+                'threshold' => scale::humanize($space['threshold']),
+                'available' => scale::humanize($space['available']),
+            ]),
+            notification::NOTIFY_ERROR
+        );
+    } else {
+        echo $OUTPUT->notification(
+            get_string('undeterminedspace', 'tool_coursebulkactions'),
+            notification::NOTIFY_ERROR
+        );
+    }
+}
 
 $tabrow = tabs::get_tabrow();
 $tabs = [$tabrow];

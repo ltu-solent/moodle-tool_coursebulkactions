@@ -86,7 +86,7 @@ class renderer extends plugin_renderer_base {
      * @return void
      */
     public function render_queue() {
-        $table = new queued_table('queuedcourses', [manager::STATUS_QUEUED]);
+        $table = new queued_table('queuedcourses', [manager::STATUS_QUEUED, manager::STATUS_DEFERRED]);
         $table->out(100, false);
     }
 

@@ -31,6 +31,11 @@ $string['actions'] = 'Actions';
 $string['bulkactions'] = 'Bulk actions';
 $string['bulkactionscrontask'] = 'Course bulk actions cron task';
 
+$string['categorybinenabled'] = 'The category recycle bin is enabled. This means that categories with courses queued for deletion' .
+    ' will be moved to the recycle bin, rather than being deleted immediately. This can be useful to prevent accidental ' .
+    ' data loss, but it also means that courses in these categories will not be deleted until the recycle bin is emptied.<br>' .
+    '<strong>Warning:</strong> Check you have enough disk space for course backups.';
+$string['categorybinwarning'] = 'Your server has {$a->available} of free disk space which is less than the threshold of {$a->threshold}. This may not be enough to safely use the category recycle bin feature.';
 $string['categoryidnumber'] = 'Category ID number';
 $string['cleanuptask'] = 'Clean up task (tool_coursebulkactions)';
 $string['confirmdelete'] = 'Confirm delete';
@@ -81,6 +86,8 @@ $string['queued'] = 'Queued';
 $string['queuedfordeletion'] = 'Queued for deletion';
 $string['queuefordeletion'] = 'Queue for deletion';
 
+$string['requeue'] = 'Requeue';
+
 $string['savedsearches'] = 'Saved searches';
 $string['search'] = 'Search';
 $string['searchcriteria'] = 'Search criteria';
@@ -89,6 +96,11 @@ $string['searchtitle'] = 'Search title';
 $string['selectitem'] = 'Select \'{$a->coursename}\'';
 $string['shortname'] = 'Short name';
 $string['showselected'] = 'Show selected';
+$string['spacewarningthreshold'] = 'Space warning threshold';
+$string['spacewarningthreshold_desc'] = 'The amount of free disk space at which a warning message will be shown to users.
+    This is used to help prevent users from queuing courses for deletion when there is not enough disk space to safely do so.
+    The default is 10GB, but you may want to adjust this based on the size of your courses and the amount of free disk space
+    you have available.';
 $string['startdate'] = 'Start date';
 $string['status'] = 'Status';
 $string['status_0'] = 'Queued';
@@ -96,11 +108,12 @@ $string['status_1'] = 'Pending';
 $string['status_2'] = 'Processing';
 $string['status_3'] = 'Completed';
 $string['status_4'] = 'Failed';
-
+$string['status_5'] = 'Deferred';
 
 $string['timecreated'] = 'Time created';
 $string['timemodified'] = 'Time modified';
 
+$string['undeterminedspace'] = 'The available disk space on your server cannot be determined. Consider switching off Category recycle bin and removing "disk_free_space" from "disabled_functions" in your php.ini file.';
 $string['usermodified'] = 'Modified by';
 
 $string['withselectedcourses'] = 'With selected courses...';

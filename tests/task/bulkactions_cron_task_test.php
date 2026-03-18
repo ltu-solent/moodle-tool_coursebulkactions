@@ -107,6 +107,12 @@ final class bulkactions_cron_task_test extends advanced_testcase {
                 8,
                 false,
             ],
+            'deferred action' => [
+                manager::STATUS_DEFERRED,
+                manager::BULKACTION_DELETE,
+                8,
+                false,
+            ],
         ];
     }
 

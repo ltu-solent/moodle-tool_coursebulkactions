@@ -67,6 +67,15 @@ class bulkactions_deletecourse_task extends adhoc_task {
             manager::dequeue($id);
             return;
         }
+
+        if (manager::has_space_warning()) {
+            mtrace("Deferring deletion of course {$record->shortname} due to low disk space and enabled Category Recycle bin.");
+            $record->status = manager::STATUS_DEFERRED;
+            $record->timemodified = time();
+            $DB->update_record('tool_coursebulkactions_queue', $record);
+            return;
+        }
+
         mtrace("Beginning deletion of {$course->shortname}");
         // Store the delete output in the task trace for logging purposes.
         $trace = '';

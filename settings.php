@@ -23,6 +23,7 @@
  */
 
 use core\lang_string;
+use core\output\notification;
 use core\url;
 
 defined('MOODLE_INTERNAL') || die();
@@ -70,5 +71,28 @@ if ($hassiteconfig) {
             15552000 // Default to 6 months.
         )
     );
+
+    $settings->add(
+        new admin_setting_configselect(
+            'tool_coursebulkactions/spacewarningthreshold',
+            new lang_string('spacewarningthreshold', 'tool_coursebulkactions'),
+            new lang_string('spacewarningthreshold_desc', 'tool_coursebulkactions'),
+            10737418240, // Default to 10GB.
+            array_combine([1073741824, 2147483648, 5368709120, 10737418240, 21474836480], ['1GB', '2GB', '5GB', '10GB', '20GB'])
+        )
+    );
+
+    if (!function_exists('disk_free_space')) {
+        $settings->add(
+            new admin_setting_description(
+                'tool_coursebulkactions/undeterminedspace',
+                '',
+                $OUTPUT->notification(
+                    get_string('undeterminedspace', 'tool_coursebulkactions'),
+                    notification::NOTIFY_ERROR
+                )
+            )
+        );
+    }
     $ADMIN->add('tool_coursebulkactionscat', $settings);
 }

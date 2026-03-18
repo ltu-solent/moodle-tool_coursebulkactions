@@ -102,7 +102,8 @@ class queued_table extends sql_table {
      * @return string
      */
     public function col_actions($row): string {
-        $link = html_writer::link(
+        $html = '';
+        $html .= html_writer::link(
             new url(
                 '/admin/tool/coursebulkactions/index.php',
                 ['action' => 'dequeue', 'id' => $row->id, 'sesskey' => sesskey(), 'tab' => 'queue']
@@ -110,7 +111,17 @@ class queued_table extends sql_table {
             get_string('dequeue', 'tool_coursebulkactions'),
             ['class' => 'btn btn-warning']
         );
-        return $link;
+        if ($row->status == manager::STATUS_DEFERRED) {
+            $html .= html_writer::link(
+                new url(
+                    '/admin/tool/coursebulkactions/index.php',
+                    ['action' => 'requeue', 'id' => $row->id, 'sesskey' => sesskey(), 'tab' => 'queue']
+                ),
+                get_string('requeue', 'tool_coursebulkactions'),
+                ['class' => 'btn btn-secondary']
+            );
+        }
+        return $html;
     }
 
     /**
@@ -160,6 +171,10 @@ class queued_table extends sql_table {
             manager::STATUS_COMPLETED => html_writer::span(
                 get_string('status_' . $row->status, 'tool_coursebulkactions'),
                 'badge badge-success'
+            ),
+            manager::STATUS_DEFERRED => html_writer::span(
+                get_string('status_' . $row->status, 'tool_coursebulkactions'),
+                'badge badge-warning'
             ),
             default => ''
         };

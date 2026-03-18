@@ -49,6 +49,10 @@ class manager {
      * Adhoc task failed
      */
     const STATUS_FAILED = 4;
+    /**
+     * Adhoc task deferred because of space issues
+     */
+    const STATUS_DEFERRED = 5;
 
     /**
      * Dequeue item
@@ -62,6 +66,20 @@ class manager {
     }
 
     /**
+     * Requeue a deferred item
+     * @param int $id
+     * @return void
+     */
+    public static function requeue(int $id): void {
+        global $DB;
+        $record = $DB->get_record('tool_coursebulkactions_queue', ['id' => $id]);
+        if ($record && $record->status == self::STATUS_DEFERRED) {
+            $record->status = self::STATUS_QUEUED;
+            $DB->update_record('tool_coursebulkactions_queue', $record);
+        }
+    }
+
+    /**
      * Delete saved search
      *
      * @param int $id
@@ -70,5 +88,35 @@ class manager {
     public static function delete_search(int $id): void {
         global $DB;
         $DB->delete_records('tool_coursebulkactions', ['id' => $id]);
+    }
+
+    /**
+     * Display space warning message
+     *
+     * @return bool
+     */
+    public static function has_space_warning(): bool {
+        global $CFG;
+        $categorybinenabled = get_config('tool_recyclebin', 'categorybinenable');
+        if (!$categorybinenabled) {
+            return false;
+        }
+        $space = self::available_space();
+        $threshold = $space['threshold'];
+        $availablespace = $space['available'];
+        return $availablespace < $threshold;
+    }
+
+    /**
+     * Get available space and threshold for warnings
+     * @return array<float, int> Available space and threshold in bytes
+     */
+    public static function available_space(): array {
+        global $CFG;
+        $availablespace = function_exists('disk_free_space') ? disk_free_space($CFG->dataroot) : 0;
+        return [
+            'available' => (float)$availablespace,
+            'threshold' => get_config('tool_coursebulkactions', 'spacewarningthreshold') ?? 10737418240, // Default to 10GB.
+        ];
     }
 }
