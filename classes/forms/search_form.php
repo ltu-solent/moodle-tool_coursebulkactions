@@ -138,6 +138,7 @@ class search_form extends persistent_form {
      */
     protected static function convert_fields(stdClass $data) {
         $data = parent::convert_fields($data);
+        // print_r($data);
         $criteria = (object)[
             'fullname' => (object)[
                 'op' => $data->fullname_op,
@@ -222,5 +223,34 @@ class search_form extends persistent_form {
             $data->customfield_fld = $customfield->fld;
         }
         return $data;
+    }
+
+    public function definition_after_data() {
+        $mform = $this->_form;
+        $criteria = $this->_customdata['data'];
+        $data = new stdClass();
+
+        $data->fullname = $criteria->fullname->value ?? '';
+        $data->fullname_op = $criteria->fullname->op ?? 0;
+
+        $data->shortname = $criteria->shortname->value ?? '';
+        $data->shortname_op = $criteria->shortname->op ?? 0;
+
+        $data->startdate_sdt = $startdate->sdt ?? null;
+        $data->startdate_edt = $startdate->edt ?? null;
+
+        $data->enddate_sdt = $enddate->sdt ?? null;
+        $data->enddate_edt = $enddate->edt ?? null;
+
+        $data->categoryidnumber = $criteria->categoryidnumber->value ?? '';
+        $data->categoryidnumber_op = $criteria->categoryidnumber->op;
+
+        $data->visible = $criteria->visible->value ?? null;
+
+        $data->customfield = $criteria->customfield->value ?? '';
+        $data->customfield_op = $criteria->customfield->op ?? 0;
+        $data->customfield_fld = $criteria->customfield->fld ?? null;
+
+        self::convert_fields($data);
     }
 }

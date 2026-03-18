@@ -24,6 +24,7 @@ use core_collator;
 use core_table\sql_table;
 use local_solalerts\filters\course_filter_customfield;
 use stdClass;
+use tool_coursebulkactions\manager;
 use user_filter_date;
 use user_filter_text;
 use user_filter_yesno;
@@ -81,10 +82,29 @@ class searchresults_table extends sql_table {
         $this->define_columns(array_keys($columns));
         $this->define_headers(array_values($columns));
         $this->collapsible(false);
+        $criteria = json_decode($search->criteria);
+        // We need to add the params to the url for paging to work, but only if not saved.
+        $id = $search->id ?? 0;
         $urlparams = [
-            'id' => $search->id ?? 0,
+            'id' => $id,
             'tab' => 'search',
         ];
+        if ($id == 0) {
+            $urlparams['fullname'] = $criteria->fullname->value;
+            $urlparams['fullname_op'] = $criteria->fullname->op;
+            $urlparams['shortname'] = $criteria->shortname->value;
+            $urlparams['shortname_op'] = $criteria->shortname->op;
+            $urlparams['startdate_sdt'] = $criteria->startdate->sdt;
+            $urlparams['startdate_edt'] = $criteria->startdate->edt;
+            $urlparams['enddate_sdt'] = $criteria->enddate->sdt;
+            $urlparams['enddate_edt'] = $criteria->enddate->edt;
+            $urlparams['categoryidnumber'] = $criteria->categoryidnumber->value;
+            $urlparams['categoryidnumber_op'] = $criteria->categoryidnumber->op;
+            $urlparams['visible'] = $criteria->visible->value;
+            $urlparams['customfield'] = $criteria->customfield->value;
+            $urlparams['customfield_op'] = $criteria->customfield->op;
+            $urlparams['customfield_fld'] = $criteria->customfield->fld;
+        }
         $this->define_baseurl(new url('/admin/tool/coursebulkactions/index.php', $urlparams));
 
         $select = 'c.id, c.fullname coursename, c.shortname, c.startdate, c.enddate, c.visible,
@@ -98,8 +118,7 @@ class searchresults_table extends sql_table {
 
         // Don't show queued items.
         $wheres[] = '(q.id IS NULL OR q.action != :queuedaction)';
-        $params['queuedaction'] = 'delete';
-        $criteria = json_decode($search->criteria);
+        $params['queuedaction'] = manager::BULKACTION_DELETE;
 
         if (isset($criteria->fullname)) {
             $field = new user_filter_text('fullname', '', false, 'c.fullname');
