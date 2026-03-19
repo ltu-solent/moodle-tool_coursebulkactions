@@ -32,7 +32,7 @@ use tool_coursebulkactions\tabs;
 require('../../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-$tab = optional_param('tab', 'search', PARAM_ALPHA);
+$tab = optional_param('tab', 'saved', PARAM_ALPHA);
 $action = optional_param('action', '', PARAM_ALPHA);
 $id = optional_param('id', 0, PARAM_INT);
 
@@ -93,7 +93,7 @@ if (manager::has_space_warning()) {
     }
 }
 
-$tabrow = tabs::get_tabrow();
+$tabrow = tabs::get_tabrow($tab);
 $tabs = [$tabrow];
 
 print_tabs($tabs, $tab, null, null, false);

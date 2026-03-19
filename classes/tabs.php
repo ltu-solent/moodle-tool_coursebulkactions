@@ -34,13 +34,16 @@ class tabs {
      *
      * @return array
      */
-    public static function get_tabrow() {
+    public static function get_tabrow($currenttab = 'saved') {
         $tabrow = [];
-        $tabrow[] = new tabobject(
-            'search',
-            new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'search']),
-            new lang_string('search', 'tool_coursebulkactions')
-        );
+        if ($currenttab === 'search') {
+            $tabrow[] = new tabobject(
+                'search',
+                new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'search']),
+                new lang_string('search', 'tool_coursebulkactions')
+            );
+        }
+
         $tabrow[] = new tabobject(
             'saved',
             new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'saved']),
