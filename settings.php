@@ -35,7 +35,7 @@ if ($hassiteconfig) {
     $externalpage = new admin_externalpage(
         'tool_coursebulkactions/index',
         new lang_string('managecoursebulkactions', 'tool_coursebulkactions'),
-        new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'search'])
+        new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'saved'])
     );
 
     $ADMIN->add('tool_coursebulkactionscat', $externalpage);
