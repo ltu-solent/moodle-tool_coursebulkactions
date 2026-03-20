@@ -21,10 +21,7 @@ use core\lang_string;
 use core\output\html_writer;
 use core\url;
 use core_table\sql_table;
-use local_solalerts\filters\course_filter_customfield;
-use user_filter_date;
-use user_filter_text;
-use user_filter_yesno;
+use tool_coursebulkactions\persistents\search;
 
 /**
  * Class searches_table
@@ -97,98 +94,8 @@ class searches_table extends sql_table {
      * @return string list of selected criteria
      */
     protected function col_criteria($record) {
-        $criteria = json_decode($record->criteria);
-        if (!$criteria) {
-            return '';
-        }
-        $items = [];
-        if (isset($criteria->fullname->value) && $criteria->fullname->value != '') {
-            $fullname = new user_filter_text('fullname', get_string('fullname', 'tool_coursebulkactions'), false, 'fullname');
-            $fielddata = [
-                'value' => $criteria->fullname->value,
-                'operator' => $criteria->fullname->op,
-            ];
-            $item = $fullname->get_label($fielddata);
-            if (!empty($item)) {
-                $items[] = $item;
-            }
-        }
-        if (isset($criteria->shortname->value) && $criteria->shortname->value != '') {
-            $shortname = new user_filter_text('fullname', get_string('shortname', 'tool_coursebulkactions'), false, 'fullname');
-            $fielddata = [
-                'value' => $criteria->shortname->value,
-                'operator' => $criteria->shortname->op,
-            ];
-            $item = $shortname->get_label($fielddata);
-            if (!empty($item)) {
-                $items[] = $item;
-            }
-        }
-        if (isset($criteria->startdate->sdt) && $criteria->startdate->edt != '') {
-            $startdate = new user_filter_date('startdate', new lang_string('startdate'), false, 'startdate');
-            $fielddata = [
-                'after' => $criteria->startdate->sdt,
-                'before' => $criteria->startdate->edt,
-            ];
-            $item = $startdate->get_label($fielddata);
-            if (!empty($item)) {
-                $items[] = $item;
-            }
-        }
-        if (isset($criteria->enddate->sdt) && $criteria->enddate->edt != '') {
-            $enddate = new user_filter_date('enddate', new lang_string('enddate'), false, 'enddate');
-            $fielddata = [
-                'after' => $criteria->enddate->sdt,
-                'before' => $criteria->enddate->edt,
-            ];
-            $item = $enddate->get_label($fielddata);
-            if (!empty($item)) {
-                $items[] = $item;
-            }
-        }
-        if (isset($criteria->categoryidnumber->value) && $criteria->categoryidnumber->value != '') {
-            $categoryidnumber = new user_filter_text(
-                'categoryidnumber',
-                get_string('categoryidnumber', 'tool_coursebulkactions'),
-                false,
-                'categoryidnumber'
-            );
-            $fielddata = [
-                'value' => $criteria->categoryidnumber->value,
-                'operator' => $criteria->categoryidnumber->op,
-            ];
-            $item = $categoryidnumber->get_label($fielddata);
-            if (!empty($item)) {
-                $items[] = $item;
-            }
-        }
-        if (isset($criteria->visible->value) && $criteria->visible->value != '') {
-            $visible = new user_filter_yesno('visible', new lang_string('visible'), false, 'visible');
-            $fielddata = [
-                'value' => $criteria->visible->value,
-            ];
-            $item = $visible->get_label($fielddata);
-            if (!empty($item)) {
-                $items[] = $item;
-            }
-        }
-        if (isset($criteria->customfield->value) && $criteria->customfield->value != '') {
-            $customfield = new course_filter_customfield(
-                'customfield',
-                new lang_string('customfield', 'tool_coursebulkactions'),
-                false
-            );
-            $fielddata = [
-                'fieldid' => $criteria->customfield->fld,
-                'value' => $criteria->customfield->value,
-                'operator' => $criteria->customfield->op,
-            ];
-            $item = $customfield->get_label($fielddata);
-            if ($item) {
-                $items[] = $item;
-            }
-        }
-        return html_writer::alist($items);
+        $search = new search($record->id);
+        return $search->print_criteria();
     }
 
     /**

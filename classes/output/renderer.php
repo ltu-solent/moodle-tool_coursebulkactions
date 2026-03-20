@@ -50,6 +50,8 @@ class renderer extends plugin_renderer_base {
                 'data-action' => 'tool-coursebulkactions-search',
             ]
         );
+        echo html_writer::tag('p', clean_text($search->get('description')));
+        echo $search->print_criteria();
 
         $searchresults = new searchresults_table('searchresults', $search->to_record());
         $output = '';
