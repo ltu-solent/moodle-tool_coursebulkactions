@@ -42,7 +42,6 @@ class search extends persistent {
             'title' => [
                 'type' => PARAM_TEXT,
                 'description' => 'The name of the search.',
-                'default' => '',
             ],
             'description' => [
                 'type' => PARAM_TEXT,

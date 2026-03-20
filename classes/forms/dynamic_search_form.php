@@ -67,6 +67,7 @@ class dynamic_search_form extends dynamic_form {
         $mform->addElement('html', '<p>' . get_string('searchinstructions', 'tool_coursebulkactions') . '</p>');
         $mform->addElement('text', 'title', get_string('searchtitle', 'tool_coursebulkactions'));
         $mform->setType('title', PARAM_TEXT);
+        $mform->addRule('title', get_string('required'), 'required', null, 'client');
         $mform->addElement('textarea', 'description', get_string('description', 'tool_coursebulkactions'));
         $mform->setType('description', PARAM_TEXT);
 
