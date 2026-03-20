@@ -89,22 +89,7 @@ class searchresults_table extends sql_table {
             'id' => $id,
             'tab' => 'search',
         ];
-        if ($id == 0) {
-            $urlparams['fullname'] = $criteria->fullname->value;
-            $urlparams['fullname_op'] = $criteria->fullname->op;
-            $urlparams['shortname'] = $criteria->shortname->value;
-            $urlparams['shortname_op'] = $criteria->shortname->op;
-            $urlparams['startdate_sdt'] = $criteria->startdate->sdt;
-            $urlparams['startdate_edt'] = $criteria->startdate->edt;
-            $urlparams['enddate_sdt'] = $criteria->enddate->sdt;
-            $urlparams['enddate_edt'] = $criteria->enddate->edt;
-            $urlparams['categoryidnumber'] = $criteria->categoryidnumber->value;
-            $urlparams['categoryidnumber_op'] = $criteria->categoryidnumber->op;
-            $urlparams['visible'] = $criteria->visible->value;
-            $urlparams['customfield'] = $criteria->customfield->value;
-            $urlparams['customfield_op'] = $criteria->customfield->op;
-            $urlparams['customfield_fld'] = $criteria->customfield->fld;
-        }
+
         $this->define_baseurl(new url('/admin/tool/coursebulkactions/index.php', $urlparams));
 
         $select = 'c.id, c.fullname coursename, c.shortname, c.startdate, c.enddate, c.visible,

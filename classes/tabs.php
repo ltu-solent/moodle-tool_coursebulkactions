@@ -40,7 +40,7 @@ class tabs {
             $tabrow[] = new tabobject(
                 'search',
                 new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'search']),
-                new lang_string('search', 'tool_coursebulkactions')
+                new lang_string('searchcourses', 'tool_coursebulkactions')
             );
         }
 

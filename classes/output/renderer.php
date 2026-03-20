@@ -16,9 +16,9 @@
 
 namespace tool_coursebulkactions\output;
 
+use core\output\html_writer;
 use core\output\plugin_renderer_base;
-use stdClass;
-use tool_coursebulkactions\forms\search_form;
+use core\url;
 use tool_coursebulkactions\manager;
 use tool_coursebulkactions\persistents\search;
 use tool_coursebulkactions\tables\queued_table;
@@ -39,81 +39,23 @@ class renderer extends plugin_renderer_base {
      * @return string
      */
     public function render_search() {
-        global $USER;
-        $id = optional_param('id', 0, PARAM_INT);
-        $data = (object)[
-            'fullname' => (object)[
-                'op' => optional_param('fullname_op', 0, PARAM_INT),
-                'value' => optional_param('fullname', '', PARAM_TEXT),
-            ],
-            'shortname' => (object)[
-                'op' => optional_param('shortname_op', 0, PARAM_INT),
-                'value' => optional_param('shortname', '', PARAM_TEXT),
-            ],
-            'startdate' => (object)[
-                'sdt' => optional_param('startdate_sdt', null, PARAM_INT),
-                'edt' => optional_param('startdate_edt', null, PARAM_INT),
-            ],
-            'enddate' => (object)[
-                'sdt' => optional_param('enddate_sdt', null, PARAM_INT),
-                'edt' => optional_param('enddate_edt', null, PARAM_INT),
-            ],
-            'categoryidnumber' => (object)[
-                'op' => optional_param('categoryidnumber_op', 0, PARAM_INT),
-                'value' => optional_param('categoryidnumber', '', PARAM_TEXT),
-            ],
-            'visible' => (object)[
-                'value' => optional_param('visible', null, PARAM_INT),
-            ],
-            'customfield' => (object)[
-                'op' => optional_param('customfield_op', 0, PARAM_INT),
-                'value' => optional_param('customfield', '', PARAM_TEXT),
-                'fld' => optional_param('customfield_fld', null, PARAM_INT),
-            ],
-        ];
-
-        // $data->fullname = optional_param('fullname', '', PARAM_TEXT);
-        // $data->fullname_op = optional_param('fullname_op', 0, PARAM_INT);
-        // $data->shortname = optional_param('shortname', '', PARAM_TEXT);
-        // $data->shortname_op = optional_param('shortname_op', 0, PARAM_INT);
-        // $data->startdate_sdt = optional_param('startdate_sdt', null, PARAM_INT);
-        // $data->startdate_edt = optional_param('startdate_edt', null, PARAM_INT);
-        // $data->enddate_sdt = optional_param('enddate_sdt', null, PARAM_INT);
-        // $data->enddate_edt = optional_param('enddate_edt', null, PARAM_INT);
-        // $data->categoryidnumber = optional_param('categoryidnumber', '', PARAM_TEXT);
-        // $data->categoryidnumber_op = optional_param('categoryidnumber_op', 0, PARAM_INT);
-        // $data->visible = optional_param('visible', null, PARAM_INT);
-        // $data->customfield = optional_param('customfield', '', PARAM_TEXT);
-        // $data->customfield_op = optional_param('customfield_op', 0, PARAM_INT);
-        // $data->customfield_fld = optional_param('customfield_fld', null, PARAM_INT);
+        $id = required_param('id', PARAM_INT);
         $search = new search($id, null);
-        $customdata = [
-            'persistent' => $search,
-            'userid' => $USER->id,
-            'data' => $data,
-        ];
-        $form = new search_form($this->page->url->out(false), $customdata);
-        $searchresults = null;
-        if ($formdata = $form->get_data()) {
-            if ($formdata->id == 0 && !empty($formdata->title)) {
-                $search = new search(0, $formdata);
-                $search->create();
-                $formdata->id = $search->get('id');
-            } else if ($formdata->id != 0) {
-                $search = new search($formdata->id, $formdata);
-                $search->update();
-            }
-            $searchresults = new searchresults_table('searchresults', $formdata);
-        } else {
-            $search = new stdClass();
-            $search->criteria = json_encode($data);
-            $search->something = 'fishy';
-            $searchresults = new searchresults_table('searchresults', $search);
-        }
-        $output = $form->render();
+        echo html_writer::link(
+            new url('#'),
+            get_string('editcoursesearch', 'tool_coursebulkactions', ['title' => $search->get('title')]),
+            [
+                'class' => 'btn btn-primary',
+                'data-id' => $id,
+                'data-action' => 'tool-coursebulkactions-search',
+            ]
+        );
+
+        $searchresults = new searchresults_table('searchresults', $search->to_record());
+        $output = '';
         if ($searchresults) {
             ob_start();
-            $searchresults->out(10, false);
+            $searchresults->out(5, false);
             $content = ob_get_contents();
             ob_end_clean();
             $output .= $content;
@@ -128,6 +70,15 @@ class renderer extends plugin_renderer_base {
      * @return void
      */
     public function render_searches() {
+        echo html_writer::link(
+            new url('#'),
+            get_string('newcoursesearch', 'tool_coursebulkactions'),
+            [
+                'class' => 'btn btn-primary',
+                'data-id' => 0,
+                'data-action' => 'tool-coursebulkactions-search',
+            ]
+        );
         $table = new searches_table('coursesearches');
         $table->out(5, false);
     }

@@ -54,6 +54,7 @@ $string['dequeue'] = 'Dequeue';
 $string['description'] = 'Description';
 $string['duplicatetitle'] = 'A search with this title already exists. Please choose a different title.';
 
+$string['editcoursesearch'] = 'Edit {$a->title}';
 $string['enddate'] = 'End date';
 $string['enrolments'] = 'Enrolments';
 
@@ -75,6 +76,7 @@ $string['logs'] = 'Logs';
 
 $string['managecoursebulkactions'] = 'Manage course bulk actions';
 
+$string['newcoursesearch'] = 'New course search';
 $string['notvisible'] = 'Not visible';
 $string['nsections'] = '{$a} sections';
 
@@ -89,9 +91,11 @@ $string['queuefordeletion'] = 'Queue for deletion';
 $string['requeue'] = 'Requeue';
 
 $string['savedsearches'] = 'Saved searches';
-$string['search'] = 'Search';
+$string['savesearch'] = 'Save search';
+$string['searchcourses'] = 'Search courses';
 $string['searchcriteria'] = 'Search criteria';
 $string['searchinstructions'] = 'Use the form below to search for courses to perform bulk actions on. You can save your search criteria for later use by giving your search a name.';
+$string['searchsaved'] = 'Search saved';
 $string['searchtitle'] = 'Search title';
 $string['selectitem'] = 'Select \'{$a->coursename}\'';
 $string['shortname'] = 'Short name';

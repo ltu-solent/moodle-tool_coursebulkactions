@@ -76,13 +76,18 @@ class searches_table extends sql_table {
      * @return string html
      */
     protected function col_actions($record) {
-        $editurl = new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'search', 'id' => $record->id]);
+        $viewurl = new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'search', 'id' => $record->id]);
+        $editattributes = [
+            'data-id' => $record->id,
+            'data-action' => 'tool-coursebulkactions-search',
+        ];
         $deleteurl = new url(
             '/admin/tool/coursebulkactions/index.php',
             ['tab' => 'saved', 'id' => $record->id, 'action' => 'delete', 'sesskey' => sesskey()]
         );
-        return html_writer::link($editurl, get_string('view')) . ' | ' .
-            html_writer::link($deleteurl, get_string('delete'));
+        return html_writer::link('#', get_string('edit'), $editattributes) . ' | ' .
+            html_writer::link($deleteurl, get_string('delete')) . ' | ' .
+            html_writer::link($viewurl, get_string('view'));
     }
 
     /**

@@ -16,8 +16,10 @@
 
 namespace tool_coursebulkactions\forms;
 
-use core\form\persistent as persistent_form;
+use core\context;
 use core\lang_string;
+use core\url;
+use core_form\dynamic_form;
 use local_solalerts\filters\course_filter_customfield;
 use stdClass;
 use tool_coursebulkactions\persistents\search;
@@ -25,31 +27,50 @@ use user_filter_date;
 use user_filter_text;
 use user_filter_yesno;
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->dirroot . '/user/filters/lib.php');
+
 /**
- * Class search_form
+ * Class dynamic_search_form
  *
  * @package    tool_coursebulkactions
  * @copyright  2026 Southampton Solent University {@link https://www.solent.ac.uk}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class search_form extends persistent_form {
+class dynamic_search_form extends dynamic_form {
     /**
-     * Persistent class for this form
+     * Search record
      *
-     * @var string
+     * @var search
      */
-    protected static $persistentclass = search::class;
+    private $search;
+
+    /**
+     * Gets the search persistent for the given id
+     * @return search
+     */
+    protected function get_search(): search {
+        if ($this->search === null) {
+            $this->search = new search($this->_ajaxformdata['id'], null);
+        }
+        return $this->search;
+    }
 
     /**
      * Define the form.
+     *
+     * @return void
      */
     public function definition() {
         $mform = $this->_form;
         $mform->addElement('html', '<p>' . get_string('searchinstructions', 'tool_coursebulkactions') . '</p>');
-        $mform->addElement('text', 'title', new lang_string('searchtitle', 'tool_coursebulkactions'));
-        $mform->addElement('textarea', 'description', new lang_string('description', 'tool_coursebulkactions'));
+        $mform->addElement('text', 'title', get_string('searchtitle', 'tool_coursebulkactions'));
+        $mform->setType('title', PARAM_TEXT);
+        $mform->addElement('textarea', 'description', get_string('description', 'tool_coursebulkactions'));
+        $mform->setType('description', PARAM_TEXT);
 
-        $mform->addElement('header', 'filterheader', new lang_string('searchcriteria', 'tool_coursebulkactions'));
+        $mform->addElement('header', 'filterheader', get_string('searchcriteria', 'tool_coursebulkactions'));
         // See solalert_form for reference.
         $filters = [
             'fullname' => 1,
@@ -60,9 +81,11 @@ class search_form extends persistent_form {
             'visible' => 1,
             'customfield' => 1,
         ];
-        foreach ($filters as $filter => $value) {
-            if ($field = $this->get_field($filter, false)) {
-                $field->setupForm($mform);
+        foreach ($filters as $filter => $enabled) {
+            if ($enabled) {
+                if ($field = $this->get_field($filter, false)) {
+                    $field->setupForm($mform);
+                }
             }
         }
 
@@ -72,8 +95,97 @@ class search_form extends persistent_form {
         $mform->setType('usermodified', PARAM_INT);
         $mform->setType('timemodified', PARAM_INT);
         $mform->setType('id', PARAM_INT);
+    }
 
-        $this->add_action_buttons(false, get_string('search', 'tool_coursebulkactions'));
+    /**
+     * Return context
+     *
+     * @return context
+     */
+    protected function get_context_for_dynamic_submission(): context {
+        return context\system::instance();
+    }
+
+    /**
+     * Checks if current user has access to this form
+     *
+     * @return void
+     * @throws \core\exception\required_capability_exception
+     */
+    protected function check_access_for_dynamic_submission(): void {
+        require_capability('moodle/course:delete', $this->get_context_for_dynamic_submission());
+    }
+
+    /**
+     * Load in existing data as form defaults.
+     */
+    public function set_data_for_dynamic_submission(): void {
+        $search = $this->get_search();
+        $data = $search->to_record();
+        $getcriteria = json_decode($data->criteria);
+        $criteria = $getcriteria ?? null;
+        $fullname = $criteria->fullname->value ?? '';
+        if ($fullname) {
+            $data->fullname = $fullname;
+            $data->fullname_op = $criteria->fullname->op;
+        }
+        $shortname = $criteria->shortname->value ?? '';
+        if ($shortname) {
+            $data->shortname = $shortname;
+            $data->shortname_op = $criteria->shortname->op;
+        }
+        $startdate = $criteria->startdate ?? null;
+        if ($startdate) {
+            $data->startdate_sdt = $startdate->sdt ?? null;
+            $data->startdate_edt = $startdate->edt ?? null;
+        }
+        $enddate = $criteria->enddate ?? null;
+        if ($enddate) {
+            $data->enddate_sdt = $enddate->sdt ?? null;
+            $data->enddate_edt = $enddate->edt ?? null;
+        }
+        $categoryidnumber = $criteria->categoryidnumber->value ?? '';
+        if ($categoryidnumber) {
+            $data->categoryidnumber = $categoryidnumber;
+            $data->categoryidnumber_op = $criteria->categoryidnumber->op;
+        }
+        $visible = $criteria->visible->value ?? null;
+        if (!is_null($visible)) {
+            $data->visible = $visible;
+        }
+        $customfield = $criteria->customfield ?? null;
+        if ($customfield) {
+            $data->customfield = $customfield->value;
+            $data->customfield_op = $customfield->op;
+            $data->customfield_fld = $customfield->fld;
+        }
+        $this->set_data($data);
+    }
+
+    /**
+     * Process the form submission
+     *
+     * @return array
+     */
+    public function process_dynamic_submission(): array {
+        global $USER;
+        $data = $this->get_data();
+        $search = $this->get_search();
+        $search->set('title', $data->title);
+        $search->set('description', $data->description);
+        $criteria = $this->convert_fields($data);
+        $search->set('criteria', json_encode($criteria));
+        $search->save();
+        return ['status' => 'success'];
+    }
+
+    /**
+     * Returns url
+     *
+     * @return url
+     */
+    public function get_page_url_for_dynamic_submission(): url {
+        return new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'saved', 'id' => $this->get_search()->get('id')]);
     }
 
     /**
@@ -137,8 +249,6 @@ class search_form extends persistent_form {
      * @return stdClass
      */
     protected static function convert_fields(stdClass $data) {
-        $data = parent::convert_fields($data);
-        // print_r($data);
         $criteria = (object)[
             'fullname' => (object)[
                 'op' => $data->fullname_op,
@@ -169,88 +279,6 @@ class search_form extends persistent_form {
                 'fld' => $data->customfield_fld,
             ],
         ];
-        $data->criteria = json_encode($criteria);
-        return $data;
-    }
-
-    /**
-     * Get default data for form, including converting criteria from persistent to form data.
-     *
-     * @return stdClass
-     */
-    protected function get_default_data() {
-        $data = parent::get_default_data();
-        $getcriteria = $this->get_persistent()->get('criteria');
-        $criteria = null;
-        if ($getcriteria) {
-            $criteria = json_decode($getcriteria);
-        } else {
-            return $data;
-        }
-        $fullname = $criteria->fullname->value ?? '';
-        if ($fullname) {
-            $data->fullname = $fullname;
-            $data->fullname_op = $criteria->fullname->op;
-        }
-        $shortname = $criteria->shortname->value ?? '';
-        if ($shortname) {
-            $data->shortname = $shortname;
-            $data->shortname_op = $criteria->shortname->op;
-        }
-        $startdate = $criteria->startdate ?? null;
-        if ($startdate) {
-            $data->startdate_sdt = $startdate->sdt ?? null;
-            $data->startdate_edt = $startdate->edt ?? null;
-        }
-        $enddate = $criteria->enddate ?? null;
-        if ($enddate) {
-            $data->enddate_sdt = $enddate->sdt ?? null;
-            $data->enddate_edt = $enddate->edt ?? null;
-        }
-        $categoryidnumber = $criteria->categoryidnumber->value ?? '';
-        if ($categoryidnumber) {
-            $data->categoryidnumber = $categoryidnumber;
-            $data->categoryidnumber_op = $criteria->categoryidnumber->op;
-        }
-        $visible = $criteria->visible->value ?? null;
-        if (!is_null($visible)) {
-            $data->visible = $visible;
-        }
-        $customfield = $criteria->customfield ?? null;
-        if ($customfield) {
-            $data->customfield = $customfield->value;
-            $data->customfield_op = $customfield->op;
-            $data->customfield_fld = $customfield->fld;
-        }
-        return $data;
-    }
-
-    public function definition_after_data() {
-        $mform = $this->_form;
-        $criteria = $this->_customdata['data'];
-        $data = new stdClass();
-
-        $data->fullname = $criteria->fullname->value ?? '';
-        $data->fullname_op = $criteria->fullname->op ?? 0;
-
-        $data->shortname = $criteria->shortname->value ?? '';
-        $data->shortname_op = $criteria->shortname->op ?? 0;
-
-        $data->startdate_sdt = $startdate->sdt ?? null;
-        $data->startdate_edt = $startdate->edt ?? null;
-
-        $data->enddate_sdt = $enddate->sdt ?? null;
-        $data->enddate_edt = $enddate->edt ?? null;
-
-        $data->categoryidnumber = $criteria->categoryidnumber->value ?? '';
-        $data->categoryidnumber_op = $criteria->categoryidnumber->op;
-
-        $data->visible = $criteria->visible->value ?? null;
-
-        $data->customfield = $criteria->customfield->value ?? '';
-        $data->customfield_op = $criteria->customfield->op ?? 0;
-        $data->customfield_fld = $criteria->customfield->fld ?? null;
-
-        self::convert_fields($data);
+        return $criteria;
     }
 }

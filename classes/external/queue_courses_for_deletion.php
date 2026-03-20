@@ -22,6 +22,7 @@ use core_external\external_function_parameters;
 use core_external\external_multiple_structure;
 use core_external\external_single_structure;
 use core_external\external_value;
+use tool_coursebulkactions\manager;
 
 /**
  * Class queue_courses_for_deletion
@@ -64,7 +65,12 @@ class queue_courses_for_deletion extends external_api {
                 $errors[] = "No permission to delete course with id $courseid";
                 continue;
             }
-            if ($DB->record_exists('tool_coursebulkactions_queue', ['courseid' => $courseid, 'action' => 'delete'])) {
+            if (
+                $DB->record_exists(
+                    'tool_coursebulkactions_queue',
+                    ['courseid' => $courseid, 'action' => manager::BULKACTION_DELETE]
+                )
+            ) {
                 $errors[] = "Course with id $courseid is already queued for deletion";
                 continue;
             }
@@ -75,7 +81,7 @@ class queue_courses_for_deletion extends external_api {
                 'courseid' => $courseid,
                 'shortname' => $course->shortname,
                 'fullname' => $course->fullname,
-                'action' => 'delete',
+                'action' => manager::BULKACTION_DELETE,
                 'timecreated' => time(),
                 'usermodified' => $USER->id,
             ]);

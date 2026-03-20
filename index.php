@@ -48,6 +48,7 @@ require_capability('moodle/course:delete', $context);
 $PAGE->set_context($context);
 
 $PAGE->set_heading($SITE->fullname);
+$PAGE->requires->js_call_amd('tool_coursebulkactions/search_form', 'init');
 if ($tab == 'search') {
     $PAGE->requires->js_call_amd('tool_coursebulkactions/course_bulk_actions', 'init');
 }
