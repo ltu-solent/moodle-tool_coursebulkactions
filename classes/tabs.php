@@ -32,6 +32,7 @@ class tabs {
     /**
      * Get the tab row for the course bulk actions tool.
      *
+     * @param string $currenttab
      * @return array
      */
     public static function get_tabrow($currenttab = 'saved') {
