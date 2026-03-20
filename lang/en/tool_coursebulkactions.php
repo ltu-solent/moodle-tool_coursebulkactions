@@ -54,7 +54,7 @@ $string['dequeue'] = 'Dequeue';
 $string['description'] = 'Description';
 $string['duplicatetitle'] = 'A search with this title already exists. Please choose a different title.';
 
-$string['editcoursesearch'] = 'Edit {$a->title}';
+$string['editcoursesearch'] = 'Edit course search';
 $string['enddate'] = 'End date';
 $string['enrolments'] = 'Enrolments';
 

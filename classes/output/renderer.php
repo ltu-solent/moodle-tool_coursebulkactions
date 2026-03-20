@@ -41,17 +41,18 @@ class renderer extends plugin_renderer_base {
     public function render_search() {
         $id = required_param('id', PARAM_INT);
         $search = new search($id, null);
-        echo html_writer::link(
+        echo html_writer::tag('h3', $search->get('title'));
+        echo html_writer::tag('p', clean_text($search->get('description')));
+        echo $search->print_criteria();
+        echo html_writer::tag('p', html_writer::link(
             new url('#'),
-            get_string('editcoursesearch', 'tool_coursebulkactions', ['title' => $search->get('title')]),
+            get_string('editcoursesearch', 'tool_coursebulkactions'),
             [
                 'class' => 'btn btn-primary',
                 'data-id' => $id,
                 'data-action' => 'tool-coursebulkactions-search',
             ]
-        );
-        echo html_writer::tag('p', clean_text($search->get('description')));
-        echo $search->print_criteria();
+        ));
 
         $searchresults = new searchresults_table('searchresults', $search->to_record());
         $output = '';
