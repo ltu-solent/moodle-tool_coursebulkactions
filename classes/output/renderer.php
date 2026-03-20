@@ -57,7 +57,7 @@ class renderer extends plugin_renderer_base {
         $output = '';
         if ($searchresults) {
             ob_start();
-            $searchresults->out(5, false);
+            $searchresults->out(50, false);
             $content = ob_get_contents();
             ob_end_clean();
             $output .= $content;
@@ -82,7 +82,7 @@ class renderer extends plugin_renderer_base {
             ]
         );
         $table = new searches_table('coursesearches');
-        $table->out(5, false);
+        $table->out(50, false);
     }
 
     /**
