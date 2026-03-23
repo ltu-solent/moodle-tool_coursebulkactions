@@ -31,10 +31,9 @@ $string['actions'] = 'Actions';
 $string['bulkactions'] = 'Bulk actions';
 $string['bulkactionscrontask'] = 'Course bulk actions cron task';
 
-$string['categorybinenabled'] = 'The category recycle bin is enabled. This means that categories with courses queued for deletion' .
+$string['categorybinenabled'] = '<strong>The Category Recycle bin is enabled.</strong> This means that deleted courses ' .
     ' will be moved to the recycle bin, rather than being deleted immediately. This can be useful to prevent accidental ' .
-    ' data loss, but it also means that courses in these categories will not be deleted until the recycle bin is emptied.<br>' .
-    '<strong>Warning:</strong> Check you have enough disk space for course backups.';
+    ' data loss, but it also means that deleted courses will not free space until the recycle bin is emptied.';
 $string['categorybinwarning'] = 'Your server has {$a->available} of free disk space which is less than the threshold of {$a->threshold}. This may not be enough to safely use the category recycle bin feature.';
 $string['categoryidnumber'] = 'Category ID number';
 $string['cleanuptask'] = 'Clean up task (tool_coursebulkactions)';

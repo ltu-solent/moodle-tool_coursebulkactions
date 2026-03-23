@@ -72,11 +72,15 @@ echo $OUTPUT->header();
 
 echo $OUTPUT->heading(get_string('managecoursebulkactions', 'tool_coursebulkactions'));
 
-if (manager::has_space_warning()) {
+$categorybinenabled = get_config('tool_recyclebin', 'categorybinenable');
+if ($categorybinenabled) {
     echo $OUTPUT->notification(
         get_string('categorybinenabled', 'tool_coursebulkactions'),
         notification::NOTIFY_WARNING
     );
+}
+
+if (manager::has_space_warning()) {
     if (function_exists('disk_free_space')) {
         $space = manager::available_space();
         echo $OUTPUT->notification(
