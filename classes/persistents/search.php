@@ -19,7 +19,7 @@ namespace tool_coursebulkactions\persistents;
 use core\lang_string;
 use core\persistent;
 use html_writer;
-use local_solalerts\filters\course_filter_customfield;
+use tool_coursebulkactions\filters\course_filter_customfield;
 use user_filter_date;
 use user_filter_text;
 use user_filter_yesno;
