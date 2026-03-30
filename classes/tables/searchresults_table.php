@@ -205,6 +205,7 @@ class searchresults_table extends sql_table {
         $this->no_sorting('enrolments');
         $this->no_sorting('queued');
         $this->no_sorting('sections');
+        $this->no_sorting('select');
         $this->sortable(true, 'startdate', SORT_ASC);
     }
 
