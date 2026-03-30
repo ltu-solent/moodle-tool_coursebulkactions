@@ -41,7 +41,33 @@ $pageparams = [
     'action' => $action,
     'id' => $id,
 ];
-admin_externalpage_setup('tool_coursebulkactions/index', '', $pageparams, '/admin/tool/coursebulkactions/index.php');
+
+admin_externalpage_setup('tool_coursebulkactions/index');
+
+switch ($tab) {
+    case 'search':
+        $PAGE->navbar->add(
+            get_string('managecoursebulkactions', 'tool_coursebulkactions'),
+            new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'saved'])
+        );
+        $PAGE->navbar->add(get_string('searchcourses', 'tool_coursebulkactions'));
+        break;
+    case 'queue':
+        $PAGE->navbar->add(
+            get_string('managecoursebulkactions', 'tool_coursebulkactions'),
+            new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'saved'])
+        );
+        $PAGE->navbar->add(get_string('queue', 'tool_coursebulkactions'));
+        break;
+    case 'logs':
+        $PAGE->navbar->add(
+            get_string('managecoursebulkactions', 'tool_coursebulkactions'),
+            new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'saved'])
+        );
+        $PAGE->navbar->add(get_string('logs', 'tool_coursebulkactions'));
+        break;
+}
+
 $context = system::instance();
 require_capability('moodle/course:delete', $context);
 

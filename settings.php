@@ -32,13 +32,13 @@ defined('MOODLE_INTERNAL') || die();
 if ($hassiteconfig) {
     $parent = new admin_category('tool_coursebulkactionscat', new lang_string('pluginname', 'tool_coursebulkactions'));
     $ADMIN->add('tools', $parent);
-    $externalpage = new admin_externalpage(
+    $ADMIN->add('tool_coursebulkactionscat', new admin_externalpage(
         'tool_coursebulkactions/index',
         new lang_string('managecoursebulkactions', 'tool_coursebulkactions'),
-        new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'saved'])
-    );
+        new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'saved']),
+        'moodle/course:delete'
+    ));
 
-    $ADMIN->add('tool_coursebulkactionscat', $externalpage);
     $settings = new admin_settingpage(
         'tool_coursebulkactions_general',
         new lang_string('generalsettings', 'tool_coursebulkactions')
