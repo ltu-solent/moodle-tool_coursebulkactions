@@ -44,6 +44,9 @@ $pageparams = [
 
 admin_externalpage_setup('tool_coursebulkactions/index');
 
+$context = system::instance();
+require_capability('moodle/course:delete', $context);
+
 switch ($tab) {
     case 'search':
         $PAGE->navbar->add(
@@ -82,9 +85,6 @@ switch ($tab) {
         }
         break;
 }
-
-$context = system::instance();
-require_capability('moodle/course:delete', $context);
 
 $PAGE->set_context($context);
 
