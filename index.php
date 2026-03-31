@@ -51,8 +51,17 @@ switch ($tab) {
             new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'saved'])
         );
         $PAGE->navbar->add(get_string('searchcourses', 'tool_coursebulkactions'));
+        $PAGE->requires->js_call_amd('tool_coursebulkactions/course_bulk_actions', 'init');
         break;
     case 'queue':
+        if ($action === 'dequeue' && $id && confirm_sesskey()) {
+            manager::dequeue($id);
+            redirect(new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'queue']));
+        }
+        if ($action === 'requeue' && $id && confirm_sesskey()) {
+            manager::requeue($id);
+            redirect(new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'queue']));
+        }
         $PAGE->navbar->add(
             get_string('managecoursebulkactions', 'tool_coursebulkactions'),
             new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'saved'])
@@ -66,6 +75,12 @@ switch ($tab) {
         );
         $PAGE->navbar->add(get_string('logs', 'tool_coursebulkactions'));
         break;
+    case 'saved':
+        if ($action === 'delete' && $id && confirm_sesskey()) {
+            manager::delete_search($id);
+            redirect(new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'saved']));
+        }
+        break;
 }
 
 $context = system::instance();
@@ -75,25 +90,7 @@ $PAGE->set_context($context);
 
 $PAGE->set_heading($SITE->fullname);
 $PAGE->requires->js_call_amd('tool_coursebulkactions/search_form', 'init');
-if ($tab == 'search') {
-    $PAGE->requires->js_call_amd('tool_coursebulkactions/course_bulk_actions', 'init');
-}
-if ($tab == 'queue') {
-    if ($action === 'dequeue' && $id && confirm_sesskey()) {
-        manager::dequeue($id);
-        redirect(new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'queue']));
-    }
-    if ($action === 'requeue' && $id && confirm_sesskey()) {
-        manager::requeue($id);
-        redirect(new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'queue']));
-    }
-}
-if ($tab == 'saved') {
-    if ($action === 'delete' && $id && confirm_sesskey()) {
-        manager::delete_search($id);
-        redirect(new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'saved']));
-    }
-}
+
 echo $OUTPUT->header();
 
 echo $OUTPUT->heading(get_string('managecoursebulkactions', 'tool_coursebulkactions'));
