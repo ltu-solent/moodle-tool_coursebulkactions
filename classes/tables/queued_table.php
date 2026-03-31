@@ -62,17 +62,24 @@ class queued_table extends sql_table {
         $userfieldsapi = \core_user\fields::for_name(context\system::instance(), false);
         $userfieldssql = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
 
+        $graceperiod = get_config('tool_coursebulkactions', 'graceperiod');
+
         $select = "q.id, c.id courseid, q.fullname coursename, q.shortname, q.action, q.status,
-            q.usermodified, q.timecreated, q.timemodified, {$userfieldssql}";
+            q.usermodified, q.timecreated, q.timemodified, q.timecreated + :graceperiod processtime, {$userfieldssql}";
         $from = "{tool_coursebulkactions_queue} q
             LEFT JOIN {course} c ON c.id = q.courseid
             JOIN {user} u ON u.id = q.usermodified";
-        [$insql, $inparams] = $DB->get_in_or_equal($status);
+        [$insql, $inparams] = $DB->get_in_or_equal($status, SQL_PARAMS_NAMED);
         $where = " q.status $insql ";
 
-        $this->set_sql($select, $from, $where, $inparams);
+        $this->set_sql($select, $from, $where, array_merge($inparams, ['graceperiod' => $graceperiod]));
         $this->collapsible(false);
-        $this->sortable(true, 'timecreated', SORT_DESC);
+        $this->no_sorting('actions');
+        if ($tab == 'queue') {
+            $this->sortable(true, 'processtime', SORT_ASC);
+        } else {
+            $this->sortable(true, 'timecreated', SORT_DESC);
+        }
     }
 
     /**
@@ -147,9 +154,7 @@ class queued_table extends sql_table {
      * @return string
      */
     public function col_processtime($row): string {
-        $graceperiod = get_config('tool_coursebulkactions', 'graceperiod');
-        $processtime = $row->timecreated + $graceperiod;
-        return userdate($processtime, get_string('strftimedatetime', 'core_langconfig'));
+        return userdate($row->processtime, get_string('strftimedatetime', 'core_langconfig'));
     }
 
     /**
