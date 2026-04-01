@@ -113,7 +113,7 @@ class queued_table extends sql_table {
         $html .= html_writer::link(
             new url(
                 '/admin/tool/coursebulkactions/index.php',
-                ['action' => 'dequeue', 'id' => $row->id, 'sesskey' => sesskey(), 'tab' => 'queue']
+                ['action' => 'dequeue', 'id' => $row->id, 'sesskey' => sesskey(), 'tab' => 'queue', 'page' => $this->currpage]
             ),
             get_string('dequeue', 'tool_coursebulkactions'),
             ['class' => 'btn btn-warning']
@@ -122,7 +122,7 @@ class queued_table extends sql_table {
             $html .= html_writer::link(
                 new url(
                     '/admin/tool/coursebulkactions/index.php',
-                    ['action' => 'requeue', 'id' => $row->id, 'sesskey' => sesskey(), 'tab' => 'queue']
+                    ['action' => 'requeue', 'id' => $row->id, 'sesskey' => sesskey(), 'tab' => 'queue', 'page' => $this->currpage]
                 ),
                 get_string('requeue', 'tool_coursebulkactions'),
                 ['class' => 'btn btn-secondary']

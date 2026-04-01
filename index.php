@@ -35,11 +35,13 @@ require_once($CFG->libdir . '/adminlib.php');
 $tab = optional_param('tab', 'saved', PARAM_ALPHA);
 $action = optional_param('action', '', PARAM_ALPHA);
 $id = optional_param('id', 0, PARAM_INT);
+$page = optional_param('page', 0, PARAM_INT);
 
 $pageparams = [
     'tab' => $tab,
     'action' => $action,
     'id' => $id,
+    'page' => $page,
 ];
 
 admin_externalpage_setup('tool_coursebulkactions/index');
@@ -59,11 +61,11 @@ switch ($tab) {
     case 'queue':
         if ($action === 'dequeue' && $id && confirm_sesskey()) {
             manager::dequeue($id);
-            redirect(new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'queue']));
+            redirect(new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'queue', 'page' => $page]));
         }
         if ($action === 'requeue' && $id && confirm_sesskey()) {
             manager::requeue($id);
-            redirect(new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'queue']));
+            redirect(new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'queue', 'page' => $page]));
         }
         $PAGE->navbar->add(
             get_string('managecoursebulkactions', 'tool_coursebulkactions'),
@@ -81,7 +83,7 @@ switch ($tab) {
     case 'saved':
         if ($action === 'delete' && $id && confirm_sesskey()) {
             manager::delete_search($id);
-            redirect(new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'saved']));
+            redirect(new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'saved', 'page' => $page]));
         }
         break;
 }
