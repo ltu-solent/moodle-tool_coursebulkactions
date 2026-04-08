@@ -80,7 +80,15 @@ if ($hassiteconfig) {
             new lang_string('spacewarningthreshold', 'tool_coursebulkactions'),
             new lang_string('spacewarningthreshold_desc', 'tool_coursebulkactions'),
             10737418240, // Default to 10GB.
-            array_combine([1073741824, 2147483648, 5368709120, 10737418240, 21474836480], ['1GB', '2GB', '5GB', '10GB', '20GB'])
+            [
+                1073741824 => '1GB',
+                2147483648 => '2GB',
+                5368709120 => '5GB',
+                10737418240 => '10GB',
+                21474836480 => '20GB',
+                53687091200 => '50GB',
+                107374182400 => '100GB',
+            ]
         )
     );
 
