@@ -26,6 +26,7 @@
 use core\lang_string;
 use core\output\notification;
 use core\url;
+use core_admin\local\settings\autocomplete;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -95,5 +96,29 @@ if ($hassiteconfig) {
             )
         );
     }
+
+    $settings->add(
+        new admin_setting_heading(
+            'tool_coursebulkactions/hardsettings',
+            new lang_string('hardsettings', 'tool_coursebulkactions'),
+            new lang_string('hardsettings_desc', 'tool_coursebulkactions')
+        )
+    );
+    $choices = core_course_category::make_categories_list();
+    $settings->add(
+        new autocomplete(
+            'tool_coursebulkactions/excludedcategories',
+            new lang_string('excludedcategories', 'tool_coursebulkactions'),
+            new lang_string('excludedcategories_desc', 'tool_coursebulkactions'),
+            [],
+            $choices,
+            [
+                'multiple' => true,
+                'placeholder' => new lang_string('selectcategoriestoexclude', 'tool_coursebulkactions'),
+                'manageurl' => false,
+            ]
+        )
+    );
+
     $ADMIN->add('tool_coursebulkactionscat', $settings);
 }

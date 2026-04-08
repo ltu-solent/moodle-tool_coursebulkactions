@@ -21,6 +21,7 @@ use core\output\checkbox_toggleall;
 use core\output\html_writer;
 use core\url;
 use core_collator;
+use core_course_category;
 use core_table\sql_table;
 use stdClass;
 use tool_coursebulkactions\filters\course_filter_customfield;
@@ -47,7 +48,7 @@ class searchresults_table extends sql_table {
      * @return void
      */
     public function __construct($uniqueid, $search, $downloadformat = '') {
-        global $OUTPUT;
+        global $DB, $OUTPUT;
         parent::__construct($uniqueid);
         $this->set_attribute('id', 'coursebulkactions_searchresults_table');
         $columns = [];
@@ -101,6 +102,20 @@ class searchresults_table extends sql_table {
 
         $wheres = [];
         $params = [];
+
+        // Exclude courses in the following categories (and their children).
+        $excludedcategories = get_config('tool_coursebulkactions', 'excludedcategories');
+        if (!empty($excludedcategories)) {
+            $excludedcategories = explode(',', $excludedcategories);
+            $excatids = [];
+            foreach ($excludedcategories as $catid) {
+                $children = core_course_category::get($catid)->get_children();
+                $excatids = array_merge($excatids, [$catid], array_keys($children));
+            }
+            [$insql, $inparams] = $DB->get_in_or_equal($excatids, SQL_PARAMS_NAMED, 'excat', false);
+            $wheres[] = "c.category $insql";
+            $params = array_merge($params, $inparams);
+        }
 
         // Don't show queued items.
         $wheres[] = '(q.id IS NULL OR q.action != :queuedaction)';

@@ -61,6 +61,8 @@ $string['duplicatetitle'] = 'A search with this title already exists. Please cho
 $string['editcoursesearch'] = 'Edit course search';
 $string['enddate'] = 'End date';
 $string['enrolments'] = 'Enrolments';
+$string['excludedcategories'] = 'Excluded categories';
+$string['excludedcategories_desc'] = 'Categories that are excluded from bulk actions (includes child categories).';
 
 $string['fullname'] = 'Full name';
 
@@ -68,6 +70,8 @@ $string['generalsettings'] = 'General settings';
 $string['graceperiod'] = 'Grace period';
 $string['graceperiod_desc'] = 'The amount of time to wait before processing queued items. Setting a grace period can allow time for any mistakes to be rectified before irreversible actions are performed.';
 
+$string['hardsettings'] = 'Hard settings';
+$string['hardsettings_desc'] = 'Settings that affect the search results to prevent accidental deletion. These settings cannot be overridden when performing a search.';
 $string['hideselected'] = 'Hide selected';
 
 $string['limitqueueditemsrun'] = 'Limit of queued items to run at once';
@@ -101,6 +105,7 @@ $string['searchcriteria'] = 'Search criteria';
 $string['searchinstructions'] = 'Use the form below to search for courses to perform bulk actions on. You can save your search criteria for later use by giving your search a name.';
 $string['searchsaved'] = 'Search saved';
 $string['searchtitle'] = 'Search title';
+$string['selectcategoriestoexclude'] = 'Select categories to exclude';
 $string['selectitem'] = 'Select \'{$a->coursename}\'';
 $string['shortname'] = 'Short name';
 $string['showselected'] = 'Show selected';
