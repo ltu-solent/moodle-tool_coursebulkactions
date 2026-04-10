@@ -37,6 +37,7 @@ $string['categorybinenabled'] = '<strong>The Category Recycle bin is enabled.</s
     ' data loss, but it also means that deleted courses will not free space until the recycle bin is emptied.';
 $string['categorybinwarning'] = 'Your server has {$a->available} of free disk space which is less than the threshold of {$a->threshold}. This may not be enough to safely use the category recycle bin feature.';
 $string['categoryidnumber'] = 'Category ID number';
+$string['categoryrecyclebin'] = 'Category recycle bin';
 $string['cleanuptask'] = 'Clean up task (tool_coursebulkactions)';
 $string['confirmdelete'] = 'Confirm delete';
 $string['coursedeletionfailed'] = 'Course deletion failed';
@@ -73,6 +74,8 @@ $string['graceperiod_desc'] = 'The amount of time to wait before processing queu
 $string['hardsettings'] = 'Hard settings';
 $string['hardsettings_desc'] = 'Settings that affect the search results to prevent accidental deletion. These settings cannot be overridden when performing a search.';
 $string['hideselected'] = 'Hide selected';
+
+$string['items'] = 'Items';
 
 $string['limitqueueditemsrun'] = 'Limit of queued items to run at once';
 $string['limitqueueditemsrun_desc'] = 'The maximum number of queued items to process at once.

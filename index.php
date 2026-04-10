@@ -135,6 +135,7 @@ echo match ($tab) {
     'saved' => $renderer->render_searches(),
     'queue' => $renderer->render_queue(),
     'logs' => $renderer->render_logs(),
+    'recyclebin' => $renderer->render_recyclebin(),
 };
 
 echo $OUTPUT->footer();

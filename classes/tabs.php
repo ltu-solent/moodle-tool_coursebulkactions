@@ -36,6 +36,7 @@ class tabs {
      * @return array
      */
     public static function get_tabrow($currenttab = 'saved') {
+        global $DB;
         $tabrow = [];
         if ($currenttab === 'search') {
             $tabrow[] = new tabobject(
@@ -60,6 +61,15 @@ class tabs {
             new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'logs']),
             new lang_string('logs', 'tool_coursebulkactions')
         );
+        $categorybinenabled = get_config('tool_recyclebin', 'categorybinenable');
+        $hasitems = $DB->count_records('tool_recyclebin_category') > 0;
+        if ($categorybinenabled && $hasitems) {
+            $tabrow[] = new tabobject(
+                'recyclebin',
+                new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'recyclebin']),
+                new lang_string('categoryrecyclebin', 'tool_coursebulkactions')
+            );
+        }
         return $tabrow;
     }
 }

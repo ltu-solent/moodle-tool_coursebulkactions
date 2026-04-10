@@ -22,6 +22,7 @@ use core\url;
 use tool_coursebulkactions\manager;
 use tool_coursebulkactions\persistents\search;
 use tool_coursebulkactions\tables\queued_table;
+use tool_coursebulkactions\tables\recyclebin_table;
 use tool_coursebulkactions\tables\searches_table;
 use tool_coursebulkactions\tables\searchresults_table;
 
@@ -113,6 +114,16 @@ class renderer extends plugin_renderer_base {
             ],
             'logs'
         );
+        $table->out(100, false);
+    }
+
+    /**
+     * Render category recycle bin table
+     *
+     * @return void
+     */
+    public function render_recyclebin() {
+        $table = new recyclebin_table('recyclebin');
         $table->out(100, false);
     }
 }
