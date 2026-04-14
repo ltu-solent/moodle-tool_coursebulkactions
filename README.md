@@ -26,6 +26,25 @@ Whilst a course is waiting for the grace period to end, you can "Dequeue" it if 
 
 For auditing purposes a log is retained of the deletions that have occurred.
 
+## Searching tips
+
+### Date ranges
+
+It's common for Courses not to have an end date. In the database this is stored as a zero.
+
+If you want to search for course between two dates, if you set:
+
+- "Course start date" to "is after 31 July 2019" and
+- "Course end date" to "is before 1 August 2020"
+
+this will include courses that have no end date but started *any* time after 31 July 2019 (e.g. 2024).
+
+In order to limit just to the date range, also set:
+
+- "Course end date" to "is after 31 July 2019"
+
+![Search between dates](./pix/search-date-ranges.png)
+
 ## Can I recover a deleted course?
 
 This depends on whether you have enabled the Category recycle bin. Site administration -> Plugins -> Admin tools -> Recycle bin.
