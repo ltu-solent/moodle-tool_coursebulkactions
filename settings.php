@@ -52,7 +52,7 @@ if ($hassiteconfig) {
             new lang_string('limitqueueditemsrun', 'tool_coursebulkactions'),
             new lang_string('limitqueueditemsrun_desc', 'tool_coursebulkactions'),
             5,
-            array_combine(range(1, 30), range(1, 30))
+            array_combine(range(0, 30), range(0, 30))
         )
     );
     // Grace period.

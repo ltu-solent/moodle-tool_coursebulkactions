@@ -46,6 +46,11 @@ class bulkactions_cron_task extends scheduled_task {
         global $DB;
         $graceperiod = get_config('tool_coursebulkactions', 'graceperiod');
         $limit = get_config('tool_coursebulkactions', 'limitqueueditemsrun');
+        if ($limit == 0) {
+            // This is effectively a pause.
+            mtrace('No limit set for queued items to run, so no items will be processed.');
+            return;
+        }
         $params = [
             'action' => bulkactionsmanager::BULKACTION_DELETE,
             'graceperiod' => time() - $graceperiod,
@@ -55,7 +60,7 @@ class bulkactions_cron_task extends scheduled_task {
         // Check how many adhoc tasks might already be waiting or running.
         $queuedtasks = \core\task\manager::get_adhoc_tasks(bulkactions_deletecourse_task::class);
         $countqueuedtasks = count($queuedtasks);
-        // Already at capacity, so bale out.
+        // Already at capacity, so bail out.
         if ($countqueuedtasks >= $limit) {
             mtrace("Reached limit of $limit delete tasks.");
             return;
