@@ -52,6 +52,8 @@ class recyclebin_table extends sql_table {
             ";
         $where = '1=1 GROUP BY rbc.categoryid';
         $this->set_sql($fields, $from, $where, []);
+        $countsql = "SELECT COUNT(DISTINCT(categoryid)) FROM {tool_recyclebin_category}";
+        $this->set_count_sql($countsql);
         $this->collapsible(false);
         $this->define_baseurl(new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'recyclebin']));
     }
