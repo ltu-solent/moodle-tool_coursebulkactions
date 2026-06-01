@@ -40,6 +40,8 @@ final class bulkactions_deletecourse_task_test extends advanced_testcase {
     public function test_execute(int $status, string $action, bool $deletecourse): void {
         global $DB;
         $this->resetAfterTest();
+        // Ensure the recycle bin doesn't interfere with the test.
+        set_config('categorybinenable', 0, 'tool_recyclebin');
 
         $course = $this->getDataGenerator()->create_course(['shortname' => 'TESTDELETE']);
 
