@@ -215,6 +215,10 @@ class searchresults_table extends sql_table {
         }
 
         $this->set_sql($select, $from, $where, $params);
+        $this->is_downloadable(true);
+        $sheetfilename = clean_filename('coursebulkactions-' . date('Ymd') . '-' . s($search->title));
+        $this->is_downloading($downloadformat, $sheetfilename, 'courses');
+        $this->show_download_buttons_at([TABLE_P_BOTTOM]);
         $this->no_sorting('actions');
         $this->no_sorting('activities');
         $this->no_sorting('customfields');
@@ -408,6 +412,18 @@ class searchresults_table extends sql_table {
      */
     public function col_visible($row): string {
         return ($row->visible == 1) ? get_string('visible') : get_string('notvisible', 'tool_coursebulkactions');
+    }
+
+    /**
+     * Download table
+     *
+     * @return void
+     */
+    public function download() {
+        unset($this->columns['select']);
+        \core\session\manager::write_close();
+        $this->out(0, false);
+        exit();
     }
 
     /**

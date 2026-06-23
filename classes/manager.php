@@ -56,6 +56,31 @@ class manager {
     const STATUS_DEFERRED = 5;
 
     /**
+     * Queued tab
+     */
+    const TAB_QUEUED = 'queued';
+
+    /**
+     * Logs tab
+     */
+    const TAB_LOGS = 'logs';
+
+    /**
+     * Recycle bin tab
+     */
+    const TAB_RECYCLEBIN = 'recyclebin';
+
+    /**
+     * Saved searches tab
+     */
+    const TAB_SAVED = 'saved';
+
+    /**
+     * Search tab
+     */
+    const TAB_SEARCH = 'search';
+
+    /**
      * Dequeue item
      *
      * @param int $id

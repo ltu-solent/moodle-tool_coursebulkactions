@@ -20,9 +20,11 @@ use core\lang_string;
 use core\output\html_writer;
 use core\url;
 use core_table\sql_table;
+use stdClass;
+use tool_coursebulkactions\manager;
 
 /**
- * Class recyclebin_tanle
+ * Class recyclebin_table
  *
  * @package    tool_coursebulkactions
  * @copyright  2026 Southampton Solent University {@link https://www.solent.ac.uk}
@@ -34,9 +36,10 @@ class recyclebin_table extends sql_table {
      *
      * @param string $uniqueid Unique ID for the table.
      * @param array $params Parameters for the table.
+     * @param string $downloadformat Download format for the table.
      */
-    public function __construct($uniqueid, $params = []) {
-        parent::__construct($uniqueid, $params);
+    public function __construct($uniqueid, $params = [], $downloadformat = '') {
+        parent::__construct($uniqueid);
         $columns = [
             'categoryid' => 'id',
             'category' => new lang_string('categoryrecyclebin', 'tool_coursebulkactions'),
@@ -55,7 +58,11 @@ class recyclebin_table extends sql_table {
         $countsql = "SELECT COUNT(DISTINCT(categoryid)) FROM {tool_recyclebin_category}";
         $this->set_count_sql($countsql);
         $this->collapsible(false);
-        $this->define_baseurl(new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'recyclebin']));
+        $this->is_downloadable(true);
+        $sheetfilename = clean_filename('coursebulkactions-' . date('Ymd') . '-' . s('logs'));
+        $this->is_downloading($downloadformat, $sheetfilename, 'courses');
+        $this->show_download_buttons_at([TABLE_P_BOTTOM]);
+        $this->define_baseurl(new url('/admin/tool/coursebulkactions/index.php', ['tab' => manager::TAB_RECYCLEBIN]));
     }
 
     /**
@@ -70,5 +77,17 @@ class recyclebin_table extends sql_table {
             ['contextid' => $row->contextid]
         );
         return html_writer::link($url, $row->category);
+    }
+
+    /**
+     * Download table
+     *
+     * @return void
+     */
+    public function download() {
+        unset($this->columns['select']);
+        \core\session\manager::write_close();
+        $this->out(0, false);
+        exit();
     }
 }

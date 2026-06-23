@@ -21,6 +21,8 @@ use core\lang_string;
 use core\output\html_writer;
 use core\url;
 use core_table\sql_table;
+use stdClass;
+use tool_coursebulkactions\manager;
 use tool_coursebulkactions\persistents\search;
 
 /**
@@ -56,9 +58,9 @@ class searches_table extends sql_table {
         $this->no_sorting('description');
         $this->sortable(true, 'lastmodified', SORT_DESC);
         $this->collapsible(false);
-        $this->define_baseurl(new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'saved']));
+        $this->define_baseurl(new url('/admin/tool/coursebulkactions/index.php', ['tab' => manager::TAB_SAVED]));
 
-        $userfieldsapi = \core_user\fields::for_name(context\system::instance(), false);
+        $userfieldsapi = \core_user\fields::for_name();
         $userfieldssql = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
         $select = "cba.id, cba.title, cba.description, cba.criteria, cba.timemodified, cba.usermodified, {$userfieldssql}";
         $from = "{tool_coursebulkactions} cba
@@ -74,14 +76,14 @@ class searches_table extends sql_table {
      * @return string html
      */
     protected function col_actions($record) {
-        $viewurl = new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'search', 'id' => $record->id]);
+        $viewurl = new url('/admin/tool/coursebulkactions/index.php', ['tab' => manager::TAB_SEARCH, 'id' => $record->id]);
         $editattributes = [
             'data-id' => $record->id,
             'data-action' => 'tool-coursebulkactions-search',
         ];
         $deleteurl = new url(
             '/admin/tool/coursebulkactions/index.php',
-            ['tab' => 'saved', 'id' => $record->id, 'action' => 'delete', 'sesskey' => sesskey()]
+            ['tab' => manager::TAB_SAVED, 'id' => $record->id, 'action' => manager::BULKACTION_DELETE, 'sesskey' => sesskey()]
         );
         return html_writer::link('#', get_string('edit'), $editattributes) . ' | ' .
             html_writer::link($deleteurl, get_string('delete')) . ' | ' .
@@ -117,7 +119,7 @@ class searches_table extends sql_table {
      */
     protected function col_title($row): string {
         return html_writer::link(
-            new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'search', 'id' => $row->id]),
+            new url('/admin/tool/coursebulkactions/index.php', ['tab' => manager::TAB_SEARCH, 'id' => $row->id]),
             $row->title
         );
     }

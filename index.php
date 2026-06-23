@@ -51,40 +51,40 @@ $context = system::instance();
 require_capability('moodle/course:delete', $context);
 
 switch ($tab) {
-    case 'search':
+    case manager::TAB_SEARCH:
         $PAGE->navbar->add(
             get_string('managecoursebulkactions', 'tool_coursebulkactions'),
-            new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'saved'])
+            new url('/admin/tool/coursebulkactions/index.php', ['tab' => manager::TAB_SAVED])
         );
         $PAGE->navbar->add(get_string('searchcourses', 'tool_coursebulkactions'));
         $PAGE->requires->js_call_amd('tool_coursebulkactions/course_bulk_actions', 'init');
         break;
-    case 'queue':
+    case manager::TAB_QUEUED:
         if ($action === 'dequeue' && $id && confirm_sesskey()) {
             manager::dequeue($id);
-            redirect(new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'queue', 'page' => $page]));
+            redirect(new url('/admin/tool/coursebulkactions/index.php', ['tab' => manager::TAB_QUEUED, 'page' => $page]));
         }
         if ($action === 'requeue' && $id && confirm_sesskey()) {
             manager::requeue($id);
-            redirect(new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'queue', 'page' => $page]));
+            redirect(new url('/admin/tool/coursebulkactions/index.php', ['tab' => manager::TAB_QUEUED, 'page' => $page]));
         }
         $PAGE->navbar->add(
             get_string('managecoursebulkactions', 'tool_coursebulkactions'),
-            new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'saved'])
+            new url('/admin/tool/coursebulkactions/index.php', ['tab' => manager::TAB_SAVED])
         );
         $PAGE->navbar->add(get_string('queue', 'tool_coursebulkactions'));
         break;
-    case 'logs':
+    case manager::TAB_LOGS:
         $PAGE->navbar->add(
             get_string('managecoursebulkactions', 'tool_coursebulkactions'),
-            new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'saved'])
+            new url('/admin/tool/coursebulkactions/index.php', ['tab' => manager::TAB_SAVED])
         );
         $PAGE->navbar->add(get_string('logs', 'tool_coursebulkactions'));
         break;
-    case 'saved':
+    case manager::TAB_SAVED:
         if ($action === 'delete' && $id && confirm_sesskey()) {
             manager::delete_search($id);
-            redirect(new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'saved', 'page' => $page]));
+            redirect(new url('/admin/tool/coursebulkactions/index.php', ['tab' => manager::TAB_SAVED, 'page' => $page]));
         }
         break;
 }
@@ -94,13 +94,15 @@ $PAGE->set_context($context);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->requires->js_call_amd('tool_coursebulkactions/search_form', 'init');
 
-echo $OUTPUT->header();
+$output = '';
 
-echo $OUTPUT->heading(get_string('managecoursebulkactions', 'tool_coursebulkactions'));
+$output .= $OUTPUT->header();
+
+$output .= $OUTPUT->heading(get_string('managecoursebulkactions', 'tool_coursebulkactions'));
 
 $categorybinenabled = get_config('tool_recyclebin', 'categorybinenable');
 if ($categorybinenabled) {
-    echo $OUTPUT->notification(
+    $output .= $OUTPUT->notification(
         get_string('categorybinenabled', 'tool_coursebulkactions'),
         notification::NOTIFY_WARNING
     );
@@ -109,7 +111,7 @@ if ($categorybinenabled) {
 if (manager::has_space_warning()) {
     if (function_exists('disk_free_space')) {
         $space = manager::available_space();
-        echo $OUTPUT->notification(
+        $output .= $OUTPUT->notification(
             get_string('categorybinwarning', 'tool_coursebulkactions', [
                 'threshold' => scale::humanize($space['threshold']),
                 'available' => scale::humanize($space['available']),
@@ -117,7 +119,7 @@ if (manager::has_space_warning()) {
             notification::NOTIFY_ERROR
         );
     } else {
-        echo $OUTPUT->notification(
+        $output .= $OUTPUT->notification(
             get_string('undeterminedspace', 'tool_coursebulkactions'),
             notification::NOTIFY_ERROR
         );
@@ -127,15 +129,17 @@ if (manager::has_space_warning()) {
 $tabrow = tabs::get_tabrow($tab);
 $tabs = [$tabrow];
 
-print_tabs($tabs, $tab, null, null, false);
+$output .= print_tabs($tabs, $tab, null, null, true);
 $renderer = $PAGE->get_renderer('tool_coursebulkactions');
 
-echo match ($tab) {
-    'search' => $renderer->render_search(),
-    'saved' => $renderer->render_searches(),
-    'queue' => $renderer->render_queue(),
-    'logs' => $renderer->render_logs(),
-    'recyclebin' => $renderer->render_recyclebin(),
+$output .= match ($tab) {
+    manager::TAB_SEARCH => $renderer->render_search(),
+    manager::TAB_SAVED => $renderer->render_searches(),
+    manager::TAB_QUEUED => $renderer->render_queue(),
+    manager::TAB_LOGS => $renderer->render_logs(),
+    manager::TAB_RECYCLEBIN => $renderer->render_recyclebin(),
 };
 
-echo $OUTPUT->footer();
+$output .= $OUTPUT->footer();
+// Defer outputing until the end to avoid issues with table output and headers.
+echo $output;

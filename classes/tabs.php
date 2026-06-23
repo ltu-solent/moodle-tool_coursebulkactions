@@ -35,38 +35,38 @@ class tabs {
      * @param string $currenttab
      * @return array
      */
-    public static function get_tabrow($currenttab = 'saved') {
+    public static function get_tabrow($currenttab = manager::TAB_SAVED) {
         global $DB;
         $tabrow = [];
-        if ($currenttab === 'search') {
+        if ($currenttab === manager::TAB_SEARCH) {
             $tabrow[] = new tabobject(
-                'search',
-                new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'search']),
+                manager::TAB_SEARCH,
+                new url('/admin/tool/coursebulkactions/index.php', ['tab' => manager::TAB_SEARCH]),
                 new lang_string('searchcourses', 'tool_coursebulkactions')
             );
         }
 
         $tabrow[] = new tabobject(
-            'saved',
-            new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'saved']),
+            manager::TAB_SAVED,
+            new url('/admin/tool/coursebulkactions/index.php', ['tab' => manager::TAB_SAVED]),
             new lang_string('savedsearches', 'tool_coursebulkactions')
         );
         $tabrow[] = new tabobject(
-            'queue',
-            new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'queue']),
+            manager::TAB_QUEUED,
+            new url('/admin/tool/coursebulkactions/index.php', ['tab' => manager::TAB_QUEUED]),
             new lang_string('queue', 'tool_coursebulkactions')
         );
         $tabrow[] = new tabobject(
-            'logs',
-            new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'logs']),
+            manager::TAB_LOGS,
+            new url('/admin/tool/coursebulkactions/index.php', ['tab' => manager::TAB_LOGS]),
             new lang_string('logs', 'tool_coursebulkactions')
         );
         $categorybinenabled = get_config('tool_recyclebin', 'categorybinenable');
         $hasitems = $DB->count_records('tool_recyclebin_category') > 0;
         if ($categorybinenabled && $hasitems) {
             $tabrow[] = new tabobject(
-                'recyclebin',
-                new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'recyclebin']),
+                manager::TAB_RECYCLEBIN,
+                new url('/admin/tool/coursebulkactions/index.php', ['tab' => manager::TAB_RECYCLEBIN]),
                 new lang_string('categoryrecyclebin', 'tool_coursebulkactions')
             );
         }

@@ -39,8 +39,9 @@ class queued_table extends sql_table {
      * @param string $uniqueid
      * @param int $status
      * @param string $tab
+     * @param string $downloadformat
      */
-    public function __construct($uniqueid, $status = [manager::STATUS_QUEUED], $tab = 'queue') {
+    public function __construct($uniqueid, $status = [manager::STATUS_QUEUED], $tab = manager::TAB_QUEUED, $downloadformat = '') {
         global $DB;
         parent::__construct($uniqueid);
         $columns = [
@@ -53,9 +54,11 @@ class queued_table extends sql_table {
             'timecreated' => new lang_string('timecreated', 'tool_coursebulkactions'),
             'timemodified' => new lang_string('timemodified', 'tool_coursebulkactions'),
         ];
-        if ($tab == 'queue') {
+        if ($tab == manager::TAB_QUEUED) {
             $columns['processtime'] = new lang_string('processtime', 'tool_coursebulkactions');
-            $columns['actions'] = new lang_string('actions');
+            if ($downloadformat == '') {
+                $columns['actions'] = new lang_string('actions');
+            }
         }
         $this->define_columns(array_keys($columns));
         $this->define_headers(array_values($columns));
@@ -74,9 +77,13 @@ class queued_table extends sql_table {
         $where = " q.status $insql ";
 
         $this->set_sql($select, $from, $where, array_merge($inparams, ['graceperiod' => $graceperiod]));
+        $this->is_downloadable(true);
+        $sheetfilename = clean_filename('coursebulkactions-' . date('Ymd') . '-' . s($tab));
+        $this->is_downloading($downloadformat, $sheetfilename, 'courses');
+        $this->show_download_buttons_at([TABLE_P_BOTTOM]);
         $this->collapsible(false);
         $this->no_sorting('actions');
-        if ($tab == 'queue') {
+        if ($tab == manager::TAB_QUEUED) {
             $this->sortable(true, 'processtime', SORT_ASC);
         } else {
             $this->sortable(true, 'timecreated', SORT_DESC);
@@ -219,5 +226,17 @@ class queued_table extends sql_table {
      */
     public function col_usermodified($row): string {
         return fullname($row);
+    }
+
+    /**
+     * Download table
+     *
+     * @return void
+     */
+    public function download() {
+        unset($this->columns['select']);
+        \core\session\manager::write_close();
+        $this->out(0, false);
+        exit();
     }
 }

@@ -42,22 +42,30 @@ class renderer extends plugin_renderer_base {
      */
     public function render_search() {
         $id = required_param('id', PARAM_INT);
+        $download = optional_param('download', '', PARAM_ALPHA);
         $search = new search($id, null);
-        echo html_writer::tag('h3', $search->get('title'));
-        echo html_writer::tag('p', clean_text($search->get('description')));
-        echo $search->print_criteria();
-        echo html_writer::tag('p', html_writer::link(
-            new url('#'),
-            get_string('editcoursesearch', 'tool_coursebulkactions'),
-            [
-                'class' => 'btn btn-primary',
-                'data-id' => $id,
-                'data-action' => 'tool-coursebulkactions-search',
-            ]
-        ));
-
-        $searchresults = new searchresults_table('searchresults', $search->to_record());
         $output = '';
+        if (!$download) {
+            $output .= html_writer::tag('h3', $search->get('title'));
+            $output .= html_writer::tag('p', clean_text($search->get('description')));
+            $output .= $search->print_criteria();
+            $output .= html_writer::tag('p', html_writer::link(
+                new url('#'),
+                get_string('editcoursesearch', 'tool_coursebulkactions'),
+                [
+                    'class' => 'btn btn-primary',
+                    'data-id' => $id,
+                    'data-action' => 'tool-coursebulkactions-search',
+                ]
+            ));
+        }
+
+        $searchresults = new searchresults_table('searchresults', $search->to_record(), $download);
+        if ($searchresults->is_downloading()) {
+            // This will exit.
+            $searchresults->download();
+        }
+
         if ($searchresults) {
             ob_start();
             $searchresults->out(50, false);
@@ -72,10 +80,11 @@ class renderer extends plugin_renderer_base {
     /**
      * Render saved searches table
      *
-     * @return void
+     * @return string
      */
     public function render_searches() {
-        echo html_writer::link(
+        $output = '';
+        $output .= html_writer::link(
             new url('#'),
             get_string('newcoursesearch', 'tool_coursebulkactions'),
             [
@@ -85,25 +94,51 @@ class renderer extends plugin_renderer_base {
             ]
         );
         $table = new searches_table('coursesearches');
-        $table->out(50, false);
+        if ($table) {
+            ob_start();
+            $table->out(50, false);
+            $content = ob_get_contents();
+            ob_end_clean();
+            $output .= $content;
+        }
+        return $output;
     }
 
     /**
      * Render queued actions
      *
-     * @return void
+     * @return string
      */
     public function render_queue() {
-        $table = new queued_table('queuedcourses', [manager::STATUS_QUEUED, manager::STATUS_DEFERRED]);
-        $table->out(100, false);
+        $download = optional_param('download', '', PARAM_ALPHA);
+        $table = new queued_table(
+            'queuedcourses',
+            [manager::STATUS_QUEUED, manager::STATUS_DEFERRED],
+            manager::TAB_QUEUED,
+            $download
+        );
+        $output = '';
+        if ($table->is_downloading()) {
+            // This will exit.
+            $table->download();
+        }
+        if ($table) {
+            ob_start();
+            $table->out(100, false);
+            $content = ob_get_contents();
+            ob_end_clean();
+            $output .= $content;
+        }
+        return $output;
     }
 
     /**
      * Render logs for non-queued items
      *
-     * @return void
+     * @return string
      */
     public function render_logs() {
+        $download = optional_param('download', '', PARAM_ALPHA);
         $table = new queued_table(
             'coursebulkactions_logs_table',
             [
@@ -112,18 +147,44 @@ class renderer extends plugin_renderer_base {
                 manager::STATUS_PENDING,
                 manager::STATUS_PROCESSING,
             ],
-            'logs'
+            manager::TAB_LOGS,
+            $download
         );
-        $table->out(100, false);
+        $output = '';
+        if ($table->is_downloading()) {
+            // This will exit.
+            $table->download();
+        }
+        if ($table) {
+            ob_start();
+            $table->out(100, false);
+            $content = ob_get_contents();
+            ob_end_clean();
+            $output .= $content;
+        }
+        return $output;
     }
 
     /**
      * Render category recycle bin table
      *
-     * @return void
+     * @return string
      */
     public function render_recyclebin() {
-        $table = new recyclebin_table('recyclebin');
-        $table->out(100, false);
+        $download = optional_param('download', '', PARAM_ALPHA);
+        $table = new recyclebin_table('recyclebin', [], $download);
+        $output = '';
+        if ($table->is_downloading()) {
+            // This will exit.
+            $table->download();
+        }
+        if ($table) {
+            ob_start();
+            $table->out(100, false);
+            $content = ob_get_contents();
+            ob_end_clean();
+            $output .= $content;
+        }
+        return $output;
     }
 }
