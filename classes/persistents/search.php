@@ -123,6 +123,22 @@ class search extends persistent {
                 $items[] = $item;
             }
         }
+        if (isset($criteria->lastaccessed->sdt) && $criteria->lastaccessed->edt != '') {
+            $lastaccessed = new user_filter_date(
+                'lastaccessed',
+                new lang_string('lastaccessed', 'tool_coursebulkactions'),
+                false,
+                'lastaccessed'
+            );
+            $fielddata = [
+                'after' => $criteria->lastaccessed->sdt,
+                'before' => $criteria->lastaccessed->edt,
+            ];
+            $item = $lastaccessed->get_label($fielddata);
+            if (!empty($item)) {
+                $items[] = $item;
+            }
+        }
         if (isset($criteria->categoryidnumber->value) && $criteria->categoryidnumber->value != '') {
             $categoryidnumber = new user_filter_text(
                 'categoryidnumber',

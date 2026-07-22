@@ -77,6 +77,9 @@ $string['hideselected'] = 'Hide selected';
 
 $string['items'] = 'Items';
 
+$string['lastaccessed'] = 'Last accessed';
+$string['lastaccessed_help'] = 'The last time an enrolled user accessed the course. If you want to include courses that have never
+    been accessed, do not enable the "is after" date and the "is before" date sometime in the past - e.g. before the start date of any courses you\'re interested in';
 $string['limitqueueditemsrun'] = 'Limit of queued items to run at once';
 $string['limitqueueditemsrun_desc'] = 'The maximum number of queued items to process at once.
     Setting this to a low number can help reduce the load on the server, but will also increase the time it takes for
@@ -87,6 +90,7 @@ $string['logs'] = 'Logs';
 
 $string['managecoursebulkactions'] = 'Manage course bulk actions';
 
+$string['never'] = 'Never';
 $string['newcoursesearch'] = 'New course search';
 $string['notvisible'] = 'Not visible';
 $string['nsections'] = '{$a} sections';

@@ -78,6 +78,7 @@ class searchresults_table extends sql_table {
             'categoryidnumber' => new lang_string('categoryidnumber', 'tool_coursebulkactions'),
             'customfields' => new lang_string('customfields', 'tool_coursebulkactions'),
             'enrolments' => new lang_string('enrolments', 'tool_coursebulkactions'),
+            'lastaccessed' => new lang_string('lastaccessed', 'tool_coursebulkactions'),
             'sections' => new lang_string('sections'),
             'activities' => new lang_string('activities'),
         ];
@@ -95,10 +96,18 @@ class searchresults_table extends sql_table {
         $this->define_baseurl(new url('/admin/tool/coursebulkactions/index.php', $urlparams));
 
         $select = 'c.id, c.fullname coursename, c.shortname, c.startdate, c.enddate, c.visible,
-            c.category, cat.name catname, cat.idnumber catidnumber, q.action status';
+            c.category, cat.name catname, cat.idnumber catidnumber, q.action status,
+            la.lastaccessed';
         $from = "{course} c
         JOIN {course_categories} cat ON cat.id = c.category
-        LEFT JOIN {tool_coursebulkactions_queue} q ON q.courseid = c.id";
+        LEFT JOIN {tool_coursebulkactions_queue} q ON q.courseid = c.id
+        LEFT JOIN (
+            SELECT la.courseid, MAX(la.timeaccess) lastaccessed
+            FROM {user_lastaccess} la
+            JOIN {user_enrolments} ue ON ue.userid = la.userid
+            JOIN {enrol} e ON e.id = ue.enrolid AND e.courseid = la.courseid
+            GROUP BY la.courseid
+        ) la ON la.courseid = c.id";
 
         $wheres = [];
         $params = [];
@@ -156,6 +165,7 @@ class searchresults_table extends sql_table {
             [$sql, $filter] = $field->get_sql_filter($data);
             if (!empty($sql)) {
                 $wheres[] = $sql;
+                $params = array_merge($params, $filter);
             }
         }
 
@@ -168,6 +178,26 @@ class searchresults_table extends sql_table {
             [$sql, $filter] = $field->get_sql_filter($data);
             if (!empty($sql)) {
                 $wheres[] = $sql;
+                $params = array_merge($params, $filter);
+            }
+        }
+
+        if (isset($criteria->lastaccessed)) {
+            $field = new user_filter_date('lastaccessed', 'lastaccessed', false, 'la.lastaccessed');
+            $data = [
+                'after' => $criteria->lastaccessed->sdt,
+                'before' => $criteria->lastaccessed->edt,
+            ];
+            [$sql, $filter] = $field->get_sql_filter($data);
+            if (!empty($sql)) {
+                // The mdl_user_lastaccess table only contains records for users who have accessed the course,
+                // so if the after date is 0 and before date is greater than 0, we need to include courses that
+                // have never been accessed.
+                if ($data['after'] == 0 && $data['before'] > 0) {
+                    $sql = "(la.lastaccessed IS NULL OR ($sql))";
+                }
+                $wheres[] = $sql;
+                $params = array_merge($params, $filter);
             }
         }
 
@@ -346,6 +376,19 @@ class searchresults_table extends sql_table {
             $list[] = "{$enrolment->enrol}: {$enrolment->enrolments} {$enrolment->status}";
         }
         return html_writer::alist($list);
+    }
+
+    /**
+     * Last accessed
+     *
+     * @param stdClass $row
+     * @return string
+     */
+    public function col_lastaccessed($row): string {
+        if (empty($row->lastaccessed)) {
+            return new lang_string('never', 'tool_coursebulkactions');
+        }
+        return userdate($row->lastaccessed, get_string('strftimedate', 'langconfig'));
     }
 
     /**

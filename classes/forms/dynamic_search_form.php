@@ -79,6 +79,7 @@ class dynamic_search_form extends dynamic_form {
             'shortname' => 1,
             'startdate' => 1,
             'enddate' => 1,
+            'lastaccessed' => 1,
             'categoryidnumber' => 1,
             'visible' => 1,
             'customfield' => 1,
@@ -90,7 +91,7 @@ class dynamic_search_form extends dynamic_form {
                 }
             }
         }
-
+        $mform->addHelpButton('lastaccessed_grp', 'lastaccessed', 'tool_coursebulkactions');
         $mform->addElement('hidden', 'usermodified');
         $mform->addElement('hidden', 'timemodified');
         $mform->addElement('hidden', 'id');
@@ -145,6 +146,11 @@ class dynamic_search_form extends dynamic_form {
         if ($enddate) {
             $data->enddate_sdt = $enddate->sdt ?? null;
             $data->enddate_edt = $enddate->edt ?? null;
+        }
+        $lastaccessed = $criteria->lastaccessed ?? null;
+        if ($lastaccessed) {
+            $data->lastaccessed_sdt = $lastaccessed->sdt ?? null;
+            $data->lastaccessed_edt = $lastaccessed->edt ?? null;
         }
         $categoryidnumber = $criteria->categoryidnumber->value ?? '';
         if ($categoryidnumber) {
@@ -223,6 +229,12 @@ class dynamic_search_form extends dynamic_form {
                 $advanced,
                 'c.enddate'
             ),
+            'lastaccessed' => new user_filter_date(
+                'lastaccessed',
+                new lang_string('lastaccessed', 'tool_coursebulkactions'),
+                $advanced,
+                'la.lastaccessed'
+            ),
             'categoryidnumber' => new user_filter_text(
                 'categoryidnumber',
                 new lang_string('categoryidnumber', 'tool_coursebulkactions'),
@@ -267,6 +279,10 @@ class dynamic_search_form extends dynamic_form {
             'enddate' => (object)[
                 'sdt' => $data->enddate_sdt,
                 'edt' => $data->enddate_edt,
+            ],
+            'lastaccessed' => (object)[
+                'sdt' => $data->lastaccessed_sdt,
+                'edt' => $data->lastaccessed_edt,
             ],
             'categoryidnumber' => (object)[
                 'op' => $data->categoryidnumber_op,
