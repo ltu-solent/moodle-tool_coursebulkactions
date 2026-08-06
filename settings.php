@@ -32,9 +32,7 @@ defined('MOODLE_INTERNAL') || die();
 
 
 if ($hassiteconfig) {
-    $parent = new admin_category('tool_coursebulkactionscat', new lang_string('pluginname', 'tool_coursebulkactions'));
-    $ADMIN->add('tools', $parent);
-    $ADMIN->add('tool_coursebulkactionscat', new admin_externalpage(
+    $ADMIN->add('courses', new admin_externalpage(
         'tool_coursebulkactions/index',
         new lang_string('managecoursebulkactions', 'tool_coursebulkactions'),
         new url('/admin/tool/coursebulkactions/index.php', ['tab' => 'saved']),
@@ -42,8 +40,8 @@ if ($hassiteconfig) {
     ));
 
     $settings = new admin_settingpage(
-        'tool_coursebulkactions_general',
-        new lang_string('generalsettings', 'tool_coursebulkactions')
+        'tool_coursebulkactions',
+        new lang_string('pluginname', 'tool_coursebulkactions')
     );
 
     $settings->add(
@@ -128,5 +126,5 @@ if ($hassiteconfig) {
         )
     );
 
-    $ADMIN->add('tool_coursebulkactionscat', $settings);
+    $ADMIN->add('tools', $settings);
 }
