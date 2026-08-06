@@ -31,6 +31,11 @@ class manager {
     const BULKACTION_DELETE = 'delete';
 
     /**
+     * Move action
+     */
+    const BULKACTION_MOVE = 'move';
+
+    /**
      * Queued task
      */
     const STATUS_QUEUED = 0;

@@ -40,6 +40,11 @@ use user_filter_yesno;
  */
 class searchresults_table extends sql_table {
     /**
+     * Search id for the current table, used to pass to the move form
+     * @var int
+     */
+    protected $searchid = 0;
+    /**
      * Constructor
      *
      * @param string $uniqueid
@@ -87,9 +92,9 @@ class searchresults_table extends sql_table {
         $this->collapsible(false);
         $criteria = json_decode($search->criteria);
         // We need to add the params to the url for paging to work, but only if not saved.
-        $id = $search->id ?? 0;
+        $this->searchid = $search->id ?? 0;
         $urlparams = [
-            'id' => $id,
+            'id' => $this->searchid,
             'tab' => 'search',
         ];
 
@@ -497,6 +502,10 @@ class searchresults_table extends sql_table {
                     'name' => 'disabled',
                     'value' => true,
                 ],
+                [
+                    'name' => 'data-searchid',
+                    'value' => $this->searchid,
+                ],
             ];
             $data->actions = [
                 [
@@ -506,6 +515,10 @@ class searchresults_table extends sql_table {
                 [
                     'value' => '#showselected',
                     'name' => get_string('showselected', 'tool_coursebulkactions'),
+                ],
+                [
+                    'value' => '#moveselected',
+                    'name' => get_string('moveselected', 'tool_coursebulkactions'),
                 ],
                 [
                     'value' => '#queuefordeletion',

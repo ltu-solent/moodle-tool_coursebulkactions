@@ -29,6 +29,7 @@ import {get_string as getString} from 'core/str';
 import Ajax from 'core/ajax';
 import Pending from 'core/pending';
 import {add as addToast} from 'core/toast';
+import ModalForm from 'core_form/modalform';
 
 const selectors = {
     activeRows: 'input.coursecheckbox:checked',
@@ -41,6 +42,11 @@ export const init = () => {
         'confirmdelete',
         'deletewarning',
         'coursesqueuedfordeletion',
+        'movecourses',
+        'movecoursessuccess',
+        'hideselected',
+        'showselected',
+        'moveselected'
     ]);
     prefetchStrings('core', [
         'delete',
@@ -64,6 +70,9 @@ const registerEventListeners = () => {
             }
             if (action.value == '#showselected') {
                 changeVisibility('show');
+            }
+            if (action.value == '#moveselected') {
+                moveCourses(action.getAttribute('data-searchid'));
             }
         }
     });
@@ -152,4 +161,40 @@ async function changeVisibility(action) {
     } catch (error) {
         Notification.exception(error);
     }
+}
+
+/**
+ * Move courses to a different category
+ * @param {number} searchid The search ID to pass to the move form
+ * @returns {Promise<void>}
+ */
+async function moveCourses(searchid) {
+    const table = document.querySelector(selectors.table);
+    const activeRows = getList(table.querySelectorAll(selectors.activeRows));
+    const courseids = activeRows.map(item => parseInt(item.value));
+    if (courseids.length === 0) {
+        return;
+    }
+    const modal = new ModalForm({
+        formClass: 'tool_coursebulkactions\\forms\\dynamic_move_form',
+        args: {
+            courseids: courseids.join(),
+            searchid: searchid,
+        },
+        modalConfig: {
+            title: getString('movecourses', 'tool_coursebulkactions'),
+        },
+        saveButtonText: getString('movecourses', 'tool_coursebulkactions'),
+        returnFocus: table,
+    });
+    modal.addEventListener(modal.events.FORM_SUBMITTED, event => {
+        const data = event.detail;
+        if (data.error) {
+            addToast(getString(data.error, 'tool_coursebulkactions'));
+        } else {
+            addToast(getString('movecoursessuccess', 'tool_coursebulkactions'));
+            window.location.reload();
+        }
+    });
+    modal.show();
 }

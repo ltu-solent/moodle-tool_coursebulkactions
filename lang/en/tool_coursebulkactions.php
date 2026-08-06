@@ -89,9 +89,15 @@ $string['logretention_desc'] = 'Logs retained longer than this period are remove
 $string['logs'] = 'Logs';
 
 $string['managecoursebulkactions'] = 'Manage course bulk actions';
+$string['movecourses'] = 'Move courses';
+$string['movecoursessuccess'] = 'Courses moved successfully';
+$string['moveselected'] = 'Move selected';
+$string['movingcourses'] = 'Moving courses';
 
 $string['never'] = 'Never';
 $string['newcoursesearch'] = 'New course search';
+$string['nocategoryselected'] = 'No category selected. Please select a category to move the courses to.';
+$string['nocoursesselected'] = 'No courses selected. Please select courses to move.';
 $string['notvisible'] = 'Not visible';
 $string['nsections'] = '{$a} sections';
 
@@ -132,6 +138,7 @@ $string['status_5'] = 'Deferred';
 
 $string['timecreated'] = 'Time created';
 $string['timemodified'] = 'Time modified';
+$string['tocategory'] = 'To category';
 
 $string['undeterminedspace'] = 'The available disk space on your server cannot be determined. Consider switching off Category recycle bin and removing "disk_free_space" from "disabled_functions" in your php.ini file.';
 $string['usermodified'] = 'Modified by';
