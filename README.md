@@ -10,9 +10,9 @@ When you see your search results you can select the ones you want to do an opera
 
 ![Search results](./pix/search-results.png)
 
-Note: To help identify candidate courses for deletion, Course enrolment, and contents summaries are included.
+Note: To help identify candidate courses for deletion, Course enrolment, Last accessed and contents summaries are included.
 
-Show/Hide will work instantly on your choices.
+Show/Hide and Move will work instantly on your choices.
 
 Deleting courses works a little differently. Because deleting courses can take a little while and can be resource hungry,
 the courses you select for deletion are "queued" for a "grace period". This grace period helps to prevent accidental deletion.
