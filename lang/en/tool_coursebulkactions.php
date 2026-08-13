@@ -62,6 +62,9 @@ $string['duplicatetitle'] = 'A search with this title already exists. Please cho
 $string['editcoursesearch'] = 'Edit course search';
 $string['enddate'] = 'End date';
 $string['enrolments'] = 'Enrolments';
+$string['enrolmentstatus0'] = 'Active';
+$string['enrolmentstatus1'] = 'Suspended';
+$string['enrolmentstatus2'] = 'Expired';
 $string['excludedcategories'] = 'Excluded categories';
 $string['excludedcategories_desc'] = 'Categories that are excluded from bulk actions (includes child categories).';
 
@@ -89,6 +92,7 @@ $string['logretention_desc'] = 'Logs retained longer than this period are remove
 $string['logs'] = 'Logs';
 
 $string['managecoursebulkactions'] = 'Manage course bulk actions';
+$string['metalinked'] = 'Meta linked: {$a->metalinked} {$a->status}';
 $string['movecourses'] = 'Move courses';
 $string['movecoursessuccess'] = 'Courses moved successfully';
 $string['moveselected'] = 'Move selected';

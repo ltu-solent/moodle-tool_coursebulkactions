@@ -363,7 +363,7 @@ class searchresults_table extends sql_table {
      */
     public function col_enrolments($row): string {
         global $DB;
-        $sql = "SELECT UUID() eid, e.enrol, COUNT(ue.id) enrolments,  IF(ue.status = 0, 'Active', 'Suspended') status
+        $sql = "SELECT UUID() eid, e.enrol, COUNT(ue.id) enrolments, ue.status
             FROM {enrol} e
             LEFT JOIN {user_enrolments} ue ON ue.enrolid = e.id
             WHERE e.courseid = :courseid AND e.status = :status
@@ -378,7 +378,28 @@ class searchresults_table extends sql_table {
         }
         $list = [];
         foreach ($enrolments as $enrolment) {
-            $list[] = "{$enrolment->enrol}: {$enrolment->enrolments} {$enrolment->status}";
+            $enrol = ucwords($enrolment->enrol);
+            $status = get_string('enrolmentstatus' . $enrolment->status, 'tool_coursebulkactions');
+            $list[] = "{$enrol}: {$enrolment->enrolments} {$status}";
+        }
+        $sql = "SELECT UUID() id, COUNT(c.id) metalinked, e.status
+                FROM {enrol} e
+                JOIN {course} c ON c.id = e.courseid
+                WHERE e.enrol = 'meta' AND e.customint1 = :courseid
+                GROUP BY e.customint1, e.status";
+        $metalinked = $DB->get_records_sql($sql, [
+            'courseid' => $row->id,
+        ]);
+
+        foreach ($metalinked as $link) {
+            $list[] = get_string(
+                'metalinked',
+                'tool_coursebulkactions',
+                [
+                    'metalinked' => $link->metalinked,
+                    'status' => get_string('enrolmentstatus' . $link->status, 'tool_coursebulkactions'),
+                ]
+            );
         }
         return html_writer::alist($list);
     }
