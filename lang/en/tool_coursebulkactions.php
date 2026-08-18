@@ -62,6 +62,9 @@ $string['duplicatetitle'] = 'A search with this title already exists. Please cho
 $string['editcoursesearch'] = 'Edit course search';
 $string['enddate'] = 'End date';
 $string['enrolments'] = 'Enrolments';
+$string['enrolments_help'] = 'The number of users enrolled in the course. This includes all enrolment methods, including
+ manual enrolments, self-enrolments, and enrolments via external systems. Meta-linked is the number of courses that are meta-linked.
+ For Queued enrolments, these are Gateway enrolments that are queued for processing - these will be lost, if you delete the course.';
 $string['enrolmentstatus0'] = 'Active';
 $string['enrolmentstatus1'] = 'Suspended';
 $string['enrolmentstatus2'] = 'Expired';

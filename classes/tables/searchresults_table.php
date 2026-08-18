@@ -18,6 +18,7 @@ namespace tool_coursebulkactions\tables;
 
 use core\lang_string;
 use core\output\checkbox_toggleall;
+use core\output\help_icon;
 use core\output\html_writer;
 use core\url;
 use core_collator;
@@ -91,6 +92,19 @@ class searchresults_table extends sql_table {
         ];
         $this->define_columns(array_keys($columns));
         $this->define_headers(array_values($columns));
+
+        $columnswithhelp = [
+            'enrolments' => new help_icon('enrolments', 'tool_coursebulkactions'),
+        ];
+        $columnhelp = array_map(function (string $column) use ($columnswithhelp): ?\renderable {
+            if (array_key_exists($column, $columnswithhelp)) {
+                return $columnswithhelp[$column];
+            }
+
+            return null;
+        }, array_keys($columns));
+        $this->define_help_for_headers($columnhelp);
+
         $this->collapsible(false);
         $criteria = json_decode($search->criteria);
         // We need to add the params to the url for paging to work, but only if not saved.
