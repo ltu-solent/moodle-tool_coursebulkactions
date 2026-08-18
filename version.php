@@ -26,8 +26,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component    = 'tool_coursebulkactions';
-$plugin->release      = '1.2';
-$plugin->version      = 2026020402;
+$plugin->release      = '1.3';
+$plugin->version      = 2026020403;
 $plugin->requires     = 2024100700;
 $plugin->supported    = [405, 502];
 $plugin->maturity     = MATURITY_STABLE;
