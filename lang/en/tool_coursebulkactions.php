@@ -63,8 +63,8 @@ $string['editcoursesearch'] = 'Edit course search';
 $string['enddate'] = 'End date';
 $string['enrolments'] = 'Enrolments';
 $string['enrolments_help'] = 'The number of users enrolled in the course. This includes all enrolment methods, including
- manual enrolments, self-enrolments, and enrolments via external systems. Meta-linked is the number of courses that are meta-linked.
- For Queued enrolments, these are Gateway enrolments that are queued for processing - these will be lost, if you delete the course.';
+ manual enrolments, self-enrolments, and enrolments via external systems.<br/>Meta-linked is the number of courses that are meta-linked.
+ <br/>For Gateway queued enrolments, these are Gateway enrolments that are queued for processing - these will be deleted, if you delete the course.';
 $string['enrolmentstatus0'] = 'Active';
 $string['enrolmentstatus1'] = 'Suspended';
 $string['enrolmentstatus2'] = 'Expired';
@@ -129,6 +129,7 @@ $string['selectcategoriestoexclude'] = 'Select categories to exclude';
 $string['selectitem'] = 'Select \'{$a->coursename}\'';
 $string['shortname'] = 'Short name';
 $string['showselected'] = 'Show selected';
+$string['sitsqueued'] = 'Gateway queued enrolments: {$a->queued}';
 $string['spacewarningthreshold'] = 'Space warning threshold';
 $string['spacewarningthreshold_desc'] = 'The amount of free disk space at which a warning message will be shown to users.
     This is used to help prevent users from queuing courses for deletion when there is not enough disk space to safely do so.

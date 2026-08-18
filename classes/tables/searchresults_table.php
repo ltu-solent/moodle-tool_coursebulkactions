@@ -417,6 +417,13 @@ class searchresults_table extends sql_table {
                 ]
             );
         }
+
+        if (class_exists(\enrol_solaissits_plugin::class)) {
+            $queued = $DB->count_records('enrol_solaissits', ['courseid' => $row->id]);
+            if ($queued > 0) {
+                $list[] = get_string('sitsqueued', 'tool_coursebulkactions', ['queued' => $queued]);
+            }
+        }
         return html_writer::alist($list);
     }
 
