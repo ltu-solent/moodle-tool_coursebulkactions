@@ -86,6 +86,8 @@ class searchresults_table extends sql_table {
             'lastaccessed' => new lang_string('lastaccessed', 'tool_coursebulkactions'),
             'sections' => new lang_string('sections'),
             'activities' => new lang_string('activities'),
+            'timecreated' => new lang_string('timecreated', 'tool_coursebulkactions'),
+            'timemodified' => new lang_string('timemodified', 'tool_coursebulkactions'),
         ];
         $this->define_columns(array_keys($columns));
         $this->define_headers(array_values($columns));
@@ -102,7 +104,7 @@ class searchresults_table extends sql_table {
 
         $select = 'c.id, c.fullname coursename, c.shortname, c.startdate, c.enddate, c.visible,
             c.category, cat.name catname, cat.idnumber catidnumber, q.action status,
-            la.lastaccessed';
+            la.lastaccessed, c.timecreated, c.timemodified';
         $from = "{course} c
         JOIN {course_categories} cat ON cat.id = c.category
         LEFT JOIN {tool_coursebulkactions_queue} q ON q.courseid = c.id
@@ -461,6 +463,26 @@ class searchresults_table extends sql_table {
      */
     public function col_startdate($row): string {
         return ($row->startdate == 0) ? '' : userdate($row->startdate, get_string('strftimedate', 'langconfig'));
+    }
+
+    /**
+     * Time created column
+     *
+     * @param stdClass $row
+     * @return string
+     */
+    public function col_timecreated($row): string {
+        return ($row->timecreated == 0) ? '' : userdate($row->timecreated, get_string('strftimedate', 'langconfig'));
+    }
+
+    /**
+     * Time modified column
+     *
+     * @param stdClass $row
+     * @return string
+     */
+    public function col_timemodified($row): string {
+        return ($row->timemodified == 0) ? '' : userdate($row->timemodified, get_string('strftimedate', 'langconfig'));
     }
 
     /**
