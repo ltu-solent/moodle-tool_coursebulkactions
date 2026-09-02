@@ -138,4 +138,44 @@ final class bulkactions_deletecourse_task_test extends advanced_testcase {
             ],
         ];
     }
+
+    /**
+     * Try to create an empty course to delete to test MDL-85122
+     * @covers \admin\tool\coursebulkactions\task\bulkactions_deletecourse_task::execute
+     * @return void
+     */
+    public function test_delete_empty_course(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $emptycourse = $this->getDataGenerator()->create_course([], ['createsections' => false]);
+        $cms = $DB->get_records('course_modules', ['course' => $emptycourse->id]);
+        $this->assertEmpty($cms);
+
+        $record = (object)[
+            'courseid' => $emptycourse->id,
+            'action' => manager::BULKACTION_DELETE,
+            'status' => manager::STATUS_QUEUED,
+            'shortname' => 'TESTDELETE',
+            'fullname' => 'Test Delete Course',
+            'usermodified' => $this->getDataGenerator()->create_user()->id,
+            'timecreated' => time() - (DAYSECS * 8),
+            'timemodified' => time() - (DAYSECS * 8),
+        ];
+        $DB->insert_record('tool_coursebulkactions_queue', $record);
+
+        ob_start();
+        $task = \core\task\manager::get_scheduled_task(bulkactions_cron_task::class);
+        $task->execute();
+
+        $queuedtasks = \core\task\manager::get_adhoc_tasks(bulkactions_deletecourse_task::class);
+
+        foreach ($queuedtasks as $queuedtask) {
+            $queuedtask->execute();
+        }
+        $results = ob_get_contents();
+        ob_end_clean();
+        $this->assertStringNotContainsString('Call to undefined function course_get_format()', $results);
+    }
 }
