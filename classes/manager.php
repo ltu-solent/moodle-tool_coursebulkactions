@@ -97,17 +97,30 @@ class manager {
     }
 
     /**
+     * Update the status of a queue item
+     *
+     * @param int $id
+     * @param int $status Use a manager::STATUS_* constant to indicate the new status.
+     * @return void
+     */
+    public static function update_status(int $id, int $status): void {
+        global $DB, $USER;
+        $record = $DB->get_record('tool_coursebulkactions_queue', ['id' => $id]);
+        if ($record && $record->status !== $status) {
+            $record->status = $status;
+            $record->timemodified = time();
+            $record->usermodified = $USER->id;
+            $DB->update_record('tool_coursebulkactions_queue', $record);
+        }
+    }
+
+    /**
      * Requeue a deferred item
      * @param int $id
      * @return void
      */
     public static function requeue(int $id): void {
-        global $DB;
-        $record = $DB->get_record('tool_coursebulkactions_queue', ['id' => $id]);
-        if ($record && $record->status == self::STATUS_DEFERRED) {
-            $record->status = self::STATUS_QUEUED;
-            $DB->update_record('tool_coursebulkactions_queue', $record);
-        }
+        self::update_status($id, self::STATUS_QUEUED);
     }
 
     /**

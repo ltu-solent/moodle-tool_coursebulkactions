@@ -68,6 +68,14 @@ switch ($tab) {
             manager::requeue($id);
             redirect(new url('/admin/tool/coursebulkactions/index.php', ['tab' => manager::TAB_QUEUED, 'page' => $page]));
         }
+        if ($action === 'markcompleted' && $id && confirm_sesskey()) {
+            manager::update_status($id, manager::STATUS_COMPLETED);
+            redirect(new url('/admin/tool/coursebulkactions/index.php', ['tab' => manager::TAB_QUEUED, 'page' => $page]));
+        }
+        if ($action === 'markdeferred' && $id && confirm_sesskey()) {
+            manager::update_status($id, manager::STATUS_DEFERRED);
+            redirect(new url('/admin/tool/coursebulkactions/index.php', ['tab' => manager::TAB_QUEUED, 'page' => $page]));
+        }
         $PAGE->navbar->add(
             get_string('managecoursebulkactions', 'tool_coursebulkactions'),
             new url('/admin/tool/coursebulkactions/index.php', ['tab' => manager::TAB_SAVED])

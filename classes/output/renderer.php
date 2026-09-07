@@ -113,7 +113,7 @@ class renderer extends plugin_renderer_base {
         $download = optional_param('download', '', PARAM_ALPHA);
         $table = new queued_table(
             'queuedcourses',
-            [manager::STATUS_QUEUED, manager::STATUS_DEFERRED],
+            [manager::STATUS_QUEUED, manager::STATUS_DEFERRED, manager::STATUS_PENDING, manager::STATUS_PROCESSING],
             manager::TAB_QUEUED,
             $download
         );

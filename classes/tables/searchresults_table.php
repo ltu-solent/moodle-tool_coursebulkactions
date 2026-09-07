@@ -395,7 +395,8 @@ class searchresults_table extends sql_table {
         $list = [];
         foreach ($enrolments as $enrolment) {
             $enrol = ucwords($enrolment->enrol);
-            $status = get_string('enrolmentstatus' . $enrolment->status, 'tool_coursebulkactions');
+            $enrolmentstatus = $enrolment->status ?? 0; // Make it active, if not set.
+            $status = get_string('enrolmentstatus' . $enrolmentstatus, 'tool_coursebulkactions');
             $list[] = "{$enrol}: {$enrolment->enrolments} {$status}";
         }
         $sql = "SELECT UUID() id, COUNT(c.id) metalinked, e.status

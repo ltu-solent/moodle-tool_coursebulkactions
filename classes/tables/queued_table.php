@@ -16,9 +16,14 @@
 
 namespace tool_coursebulkactions\tables;
 
+use action_menu_link;
+use action_menu_link_secondary;
 use core\context;
 use core\lang_string;
+use core\output\action_menu;
+use core\output\action_menu\link_secondary;
 use core\output\html_writer;
+use core\output\pix_icon;
 use core\url;
 use core_table\sql_table;
 use stdClass;
@@ -117,26 +122,81 @@ class queued_table extends sql_table {
      * @return string
      */
     public function col_actions($row): string {
-        $html = '';
-        $html .= html_writer::link(
+        global $OUTPUT;
+
+        $actions = [];
+        $actions['dequeue'] = new link_secondary(
             new url(
                 '/admin/tool/coursebulkactions/index.php',
-                ['action' => 'dequeue', 'id' => $row->id, 'sesskey' => sesskey(), 'tab' => 'queue', 'page' => $this->currpage]
+                [
+                    'action' => 'dequeue',
+                    'id' => $row->id,
+                    'page' => $this->currpage,
+                    'sesskey' => sesskey(),
+                    'tab' => manager::TAB_QUEUED,
+                ]
             ),
+            new pix_icon('t/delete', get_string('dequeue', 'tool_coursebulkactions')),
             get_string('dequeue', 'tool_coursebulkactions'),
-            ['class' => 'btn btn-warning']
+            ['class' => 'text-danger'],
         );
-        if ($row->status == manager::STATUS_DEFERRED) {
-            $html .= html_writer::link(
-                new url(
-                    '/admin/tool/coursebulkactions/index.php',
-                    ['action' => 'requeue', 'id' => $row->id, 'sesskey' => sesskey(), 'tab' => 'queue', 'page' => $this->currpage]
-                ),
-                get_string('requeue', 'tool_coursebulkactions'),
-                ['class' => 'btn btn-secondary']
-            );
+
+        $actions['requeue'] = new link_secondary(
+            new url(
+                '/admin/tool/coursebulkactions/index.php',
+                [
+                    'action' => 'requeue',
+                    'id' => $row->id,
+                    'page' => $this->currpage,
+                    'sesskey' => sesskey(),
+                    'tab' => manager::TAB_QUEUED,
+                ]
+            ),
+            new pix_icon('t/reload', get_string('requeue', 'tool_coursebulkactions')),
+            get_string('requeue', 'tool_coursebulkactions'),
+        );
+
+        $actions['completed'] = new link_secondary(
+            new url(
+                '/admin/tool/coursebulkactions/index.php',
+                [
+                    'action' => 'markcompleted',
+                    'id' => $row->id,
+                    'page' => $this->currpage,
+                    'sesskey' => sesskey(),
+                    'tab' => manager::TAB_QUEUED,
+                ]
+            ),
+            new pix_icon('t/check', get_string('markcompleted', 'tool_coursebulkactions')),
+            get_string('markcompleted', 'tool_coursebulkactions'),
+            ['class' => 'text-success'],
+        );
+
+        $actions['deferred'] = new link_secondary(
+            new url(
+                '/admin/tool/coursebulkactions/index.php',
+                [
+                    'action' => 'markdeferred',
+                    'id' => $row->id,
+                    'page' => $this->currpage,
+                    'sesskey' => sesskey(),
+                    'tab' => manager::TAB_QUEUED,
+                ]
+            ),
+            new pix_icon('i/calendar', get_string('markdeferred', 'tool_coursebulkactions')),
+            get_string('markdeferred', 'tool_coursebulkactions'),
+        );
+        if ($row->status == manager::STATUS_QUEUED) {
+            unset($actions['requeue']);
         }
-        return $html;
+        if ($row->status == manager::STATUS_DEFERRED) {
+            unset($actions['deferred']);
+        }
+
+        $actionmenu = new action_menu($actions);
+        $actionmenu->set_menu_trigger(get_string('actions'));
+        $actionmenu->set_boundary('window');
+        return $OUTPUT->render($actionmenu);
     }
 
     /**

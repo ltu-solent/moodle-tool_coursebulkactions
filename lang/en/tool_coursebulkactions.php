@@ -95,6 +95,8 @@ $string['logretention_desc'] = 'Logs retained longer than this period are remove
 $string['logs'] = 'Logs';
 
 $string['managecoursebulkactions'] = 'Manage course bulk actions';
+$string['markcompleted'] = 'Mark as completed';
+$string['markdeferred'] = 'Mark as deferred';
 $string['metalinked'] = 'Meta linked: {$a->metalinked} {$a->status}';
 $string['movecourses'] = 'Move courses';
 $string['movecoursessuccess'] = 'Courses moved successfully';
