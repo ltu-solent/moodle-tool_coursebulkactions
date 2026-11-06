@@ -139,12 +139,21 @@ class searchresults_table extends sql_table {
             $excludedcategories = explode(',', $excludedcategories);
             $excatids = [];
             foreach ($excludedcategories as $catid) {
-                $children = core_course_category::get($catid)->get_children();
-                $excatids = array_merge($excatids, [$catid], array_keys($children));
+                $cat = core_course_category::get($catid, IGNORE_MISSING);
+                if ($cat) {
+                    $children = $cat->get_children();
+                    if ($children) {
+                        $excatids = array_merge($excatids, [$catid], array_keys($children));
+                    } else {
+                        $excatids[] = $catid;
+                    }
+                }
             }
-            [$insql, $inparams] = $DB->get_in_or_equal($excatids, SQL_PARAMS_NAMED, 'excat', false);
-            $wheres[] = "c.category $insql";
-            $params = array_merge($params, $inparams);
+            if (!empty($excatids)) {
+                [$insql, $inparams] = $DB->get_in_or_equal($excatids, SQL_PARAMS_NAMED, 'excat', false);
+                $wheres[] = "c.category $insql";
+                $params = array_merge($params, $inparams);
+            }
         }
 
         // Don't show queued items.
